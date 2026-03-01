@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Voyage - Japon (Automatisé)</title>
+    <style>
+        :root {
+            --primary-color: #D32F2F;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-with-btn input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.1em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-with-btn input:focus { border-color: var(--primary-color); }
+
+        .search-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        .search-btn:hover { background-color: #b71c1c; }
+        .search-btn:disabled { background-color: #ef9a9a; cursor: wait; }
+
+        .settings-bar {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th { background-color: #f9f9f9; color: var(--text-muted); }
+
+        .total-section {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary-color);
+            padding-top: 15px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .delete-btn {
+            background: none; border: none; color: #999; cursor: pointer; font-size: 1.2em;
+        }
+        .delete-btn:hover { color: var(--primary-color); }
+
+        .badge {
+            background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold;
+        }
+        .badge.high-crowd { background-color: #ffebee; color: #c62828; }
+
+        #api-msg { font-size: 0.9em; margin-top: 10px; display: none; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎌 Planificateur Intelligent - Japon</h1>
+        <p class="subtitle">Calcul automatique des durées et affluences (Base experte + OSM)</p>
+
+        <div class="form-grid">
+            <div class="input-with-btn">
+                <input type="text" id="placeName" placeholder="Entrez un lieu (ex: Kinkakuji, Akihabara, Osaka Castle...)" onkeypress="if(event.key === 'Enter') analyzeAndAdd()">
+                <button class="search-btn" id="searchBtn" onclick="analyzeAndAdd()">Ajouter</button>
+            </div>
+            <div id="api-msg">Analyse en cours...</div>
+            
+            <div class="settings-bar">
+                <label for="style" style="font-size: 0.9em; color: var(--text-muted);">Votre rythme de voyage global :</label>
+                <select id="style" onchange="recalculateAll()">
+                    <option value="0.7">Rapide (Va à l'essentiel)</option>
+                    <option value="1" selected>Normal (Prend le temps)</option>
+                    <option value="1.5">Lent (Photos, flânerie)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="resultsCard" style="display: none;">
+        <h2>Votre Itinéraire</h2>
+        <div style="overflow-x: auto;">
+            <table id="itineraryTable">
+                <thead>
+                    <tr>
+                        <th>Lieu</th>
+                        <th>Type / Affluence</th>
+                        <th>Durée sur place</th>
+                        <th>Attente estimée</th>
+                        <th>Durée Totale</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        <div class="total-section" id="totalTimeDisplay">
+            Temps total estimé : 0h 0min
+        </div>
+    </div>
+
+    <script>
+        let itinerary = []; // Stocke les données brutes pour recalcul dynamique
+
+        // 1. BASE DE DONNÉES LOCALE EXPERTE (Top 100+ des lieux au Japon)
+        const japanHotspots = {
+            // --- TOKYO ---
+            "senso": { name: "Sensō-ji (Asakusa)", duration: 60, waitTime: 30, crowdLevel: "Forte", type: "Temple" },
+            "meiji": { name: "Meiji-jingu", duration: 90, waitTime: 20, crowdLevel: "Moyenne", type: "Sanctuaire" },
+            "shibuya": { name: "Shibuya Crossing", duration: 30, waitTime: 0, crowdLevel: "Extrême", type: "Quartier" },
+            "shinjuku gyoen": { name: "Shinjuku Gyoen", duration: 120, waitTime: 15, crowdLevel: "Moyenne", type: "Parc / Jardin" },
+            "skytree": { name: "Tokyo Skytree", duration: 90, waitTime: 45, crowdLevel: "Forte", type: "Point de vue" },
+            "tokyo tower": { name: "Tokyo Tower", duration: 90, waitTime: 30, crowdLevel: "Moyenne", type: "Point de vue" },
+            "ueno": { name: "Parc d'Ueno", duration: 120, waitTime: 10, crowdLevel: "Moyenne", type: "Parc" },
+            "akihabara": { name: "Akihabara (Quartier Électronique)", duration: 180, waitTime: 0, crowdLevel: "Forte", type: "Quartier" },
+            "harajuku": { name: "Takeshita Street (Harajuku)", duration: 90, waitTime: 10, crowdLevel: "Extrême", type: "Quartier" },
+            "tsukiji": { name: "Marché extérieur de Tsukiji", duration: 90, waitTime: 20, crowdLevel: "Forte", type: "Marché" },
+            "toyosu": { name: "Marché de Toyosu", duration: 90, waitTime: 30, crowdLevel: "Moyenne", type: "Marché" },
+            "teamlab planets": { name: "TeamLab Planets", duration: 120, waitTime: 45, crowdLevel: "Extrême", type: "Musée interactif" },
+            "teamlab borderless": { name: "TeamLab Borderless (Azabudai)", duration: 150, waitTime: 45, crowdLevel: "Extrême", type: "Musée interactif" },
+            "imperial palace": { name: "Palais Impérial de Tokyo", duration: 90, waitTime: 20, crowdLevel: "Moyenne", type: "Monument historique" },
+            "ghibli": { name: "Musée Ghibli", duration: 120, waitTime: 15, crowdLevel: "Forte", type: "Musée (Réservation reco.)" },
+            "roppongi": { name: "Roppongi Hills / Mori Tower", duration: 120, waitTime: 20, crowdLevel: "Moyenne", type: "Point de vue / Quartier" },
+            "ginza": { name: "Ginza", duration: 150, waitTime: 0, crowdLevel: "Forte", type: "Quartier (Shopping)" },
+            "nakano": { name: "Nakano Broadway", duration: 120, waitTime: 0, crowdLevel: "Moyenne", type: "Quartier (Otaku)" },
+            "odaiba": { name: "Odaiba (Gundam, DiverCity)", duration: 180, waitTime: 10, crowdLevel: "Moyenne", type: "Quartier / Divertissement" },
+            "disney": { name: "Tokyo Disneyland / DisneySea", duration: 600, waitTime: 120, crowdLevel: "Extrême", type: "Parc d'attractions" },
+
+            // --- KYOTO ---
+            "kinkaku": { name: "Kinkaku-ji (Pavillon d'Or)", duration: 60, waitTime: 30, crowdLevel: "Forte", type: "Temple" },
+            "ginkaku": { name: "Ginkaku-ji (Pavillon d'Argent)", duration: 60, waitTime: 20, crowdLevel: "Moyenne", type: "Temple" },
+            "fushimi inari": { name: "Fushimi Inari-taisha", duration: 150, waitTime: 45, crowdLevel: "Extrême", type: "Sanctuaire" },
+            "kiyomizu": { name: "Kiyomizu-dera", duration: 90, waitTime: 40, crowdLevel: "Extrême", type: "Temple" },
+            "arashiyama": { name: "Arashiyama (Forêt de Bambous)", duration: 90, waitTime: 20, crowdLevel: "Extrême", type: "Nature" },
+            "tenryu": { name: "Tenryū-ji (Arashiyama)", duration: 60, waitTime: 15, crowdLevel: "Forte", type: "Temple / Jardin" },
+            "nijo": { name: "Château de Nijō", duration: 120, waitTime: 30, crowdLevel: "Forte", type: "Château" },
+            "gion": { name: "Quartier de Gion", duration: 120, waitTime: 0, crowdLevel: "Forte", type: "Quartier traditionnel" },
+            "yasaka": { name: "Sanctuaire Yasaka", duration: 45, waitTime: 10, crowdLevel: "Moyenne", type: "Sanctuaire" },
+            "nishiki": { name: "Marché de Nishiki", duration: 90, waitTime: 10, crowdLevel: "Extrême", type: "Marché" },
+            "philosopher": { name: "Chemin de la Philosophie", duration: 90, waitTime: 0, crowdLevel: "Moyenne", type: "Promenade" },
+            "ryoan": { name: "Ryōan-ji (Jardin Zen)", duration: 60, waitTime: 15, crowdLevel: "Forte", type: "Temple" },
+            "sanjusangen": { name: "Sanjūsangen-dō", duration: 60, waitTime: 20, crowdLevel: "Moyenne", type: "Temple" },
+            "heian": { name: "Sanctuaire Heian", duration: 60, waitTime: 10, crowdLevel: "Moyenne", type: "Sanctuaire" },
+            "byodo": { name: "Byōdō-in (Uji)", duration: 90, waitTime: 20, crowdLevel: "Moyenne", type: "Temple" },
+            "toji": { name: "Tō-ji", duration: 60, waitTime: 10, crowdLevel: "Faible", type: "Temple" },
+            "nanzen": { name: "Nanzen-ji", duration: 90, waitTime: 15, crowdLevel: "Moyenne", type: "Temple" },
+
+            // --- OSAKA ---
+            "osaka castle": { name: "Château d'Osaka", duration: 120, waitTime: 30, crowdLevel: "Forte", type: "Château" },
+            "dotonbori": { name: "Dōtonbori", duration: 120, waitTime: 0, crowdLevel: "Extrême", type: "Quartier (Nuit reco.)" },
+            "universal": { name: "Universal Studios Japan (USJ)", duration: 600, waitTime: 150, crowdLevel: "Extrême", type: "Parc d'attractions" },
+            "kaiyukan": { name: "Aquarium Kaiyukan", duration: 150, waitTime: 45, crowdLevel: "Forte", type: "Aquarium" },
+            "umeda sky": { name: "Umeda Sky Building", duration: 90, waitTime: 30, crowdLevel: "Moyenne", type: "Point de vue" },
+            "kuromon": { name: "Marché de Kuromon", duration: 90, waitTime: 10, crowdLevel: "Forte", type: "Marché" },
+            "shinsekai": { name: "Shinsekai / Tsutenkaku", duration: 120, waitTime: 20, crowdLevel: "Moyenne", type: "Quartier" },
+            "sumiyoshi": { name: "Sumiyoshi Taisha", duration: 60, waitTime: 10, crowdLevel: "Faible", type: "Sanctuaire" },
+            "namba yasaka": { name: "Namba Yasaka (Tête de Lion)", duration: 30, waitTime: 10, crowdLevel: "Moyenne", type: "Sanctuaire" },
+            "abeno": { name: "Abeno Harukas", duration: 90, waitTime: 20, crowdLevel: "Moyenne", type: "Point de vue" },
+
+            // --- NARA ---
+            "nara park": { name: "Parc de Nara (Cerfs)", duration: 180, waitTime: 0, crowdLevel: "Forte", type: "Parc / Nature" },
+            "todai": { name: "Tōdai-ji (Grand Bouddha)", duration: 90, waitTime: 30, crowdLevel: "Extrême", type: "Temple" },
+            "kasuga": { name: "Kasuga Taisha", duration: 60, waitTime: 15, crowdLevel: "Moyenne", type: "Sanctuaire" },
+            "kofuku": { name: "Kōfuku-ji", duration: 45, waitTime: 10, crowdLevel: "Moyenne", type: "Temple" },
+
+            // --- HIROSHIMA & MIYAJIMA ---
+            "peace park": { name: "Parc du Mémorial de la Paix", duration: 90, waitTime: 0, crowdLevel: "Moyenne", type: "Parc / Mémorial" },
+            "a-bomb": { name: "Dôme de la Bombe Atomique", duration: 30, waitTime: 0, crowdLevel: "Forte", type: "Monument historique" },
+            "peace museum": { name: "Musée du Mémorial de la Paix", duration: 120, waitTime: 40, crowdLevel: "Forte", type: "Musée" },
+            "itsukushima": { name: "Sanctuaire d'Itsukushima (Torii flottant)", duration: 90, waitTime: 30, crowdLevel: "Extrême", type: "Sanctuaire" },
+            "misen": { name: "Mont Misen (Miyajima)", duration: 180, waitTime: 45, crowdLevel: "Moyenne", type: "Randonnée / Nature" },
+
+            // --- MT FUJI / HAKONE / KAWAGUCHIKO ---
+            "chureito": { name: "Pagode Chureito", duration: 90, waitTime: 45, crowdLevel: "Forte", type: "Point de vue / Photo" },
+            "oishi": { name: "Parc Oishi (Lac Kawaguchi)", duration: 60, waitTime: 15, crowdLevel: "Forte", type: "Parc / Point de vue" },
+            "hakone shrine": { name: "Sanctuaire de Hakone", duration: 60, waitTime: 40, crowdLevel: "Forte", type: "Sanctuaire" },
+            "owakudani": { name: "Owakudani (Vallée volcanique)", duration: 90, waitTime: 30, crowdLevel: "Forte", type: "Nature" },
+            "fuji q": { name: "Fuji-Q Highland", duration: 480, waitTime: 120, crowdLevel: "Extrême", type: "Parc d'attractions" },
+            "gotemba": { name: "Gotemba Premium Outlets", duration: 240, waitTime: 15, crowdLevel: "Forte", type: "Shopping" },
+
+            // --- HOKKAIDO (Sapporo & Alentours) ---
+            "odori": { name: "Parc Odori (Sapporo)", duration: 60, waitTime: 0, crowdLevel: "Moyenne", type: "Parc" },
+            "sapporo beer": { name: "Musée de la Bière de Sapporo", duration: 90, waitTime: 20, crowdLevel: "Moyenne", type: "Musée" },
+            "shiroi koibito": { name: "Shiroi Koibito Park", duration: 120, waitTime: 30, crowdLevel: "Forte", type: "Parc à thème / Usine" },
+            "otaru canal": { name: "Canal d'Otaru", duration: 60, waitTime: 0, crowdLevel: "Moyenne", type: "Promenade" },
+            "asahiyama": { name: "Zoo d'Asahiyama", duration: 180, waitTime: 30, crowdLevel: "Forte", type: "Zoo" },
+            "hakodate ropeway": { name: "Téléphérique du Mont Hakodate", duration: 90, waitTime: 45, crowdLevel: "Forte", type: "Point de vue (Nuit)" },
+
+            // --- KYUSHU & OKINAWA ---
+            "fukuoka tower": { name: "Fukuoka Tower", duration: 60, waitTime: 15, crowdLevel: "Moyenne", type: "Point de vue" },
+            "dazaifu": { name: "Dazaifu Tenman-gū", duration: 90, waitTime: 20, crowdLevel: "Forte", type: "Sanctuaire" },
+            "kumamoto castle": { name: "Château de Kumamoto", duration: 120, waitTime: 20, crowdLevel: "Moyenne", type: "Château" },
+            "beppu": { name: "Les Enfers de Beppu (Jigoku)", duration: 180, waitTime: 15, crowdLevel: "Forte", type: "Nature / Onsen" },
+            "churaumi": { name: "Aquarium Churaumi (Okinawa)", duration: 180, waitTime: 40, crowdLevel: "Forte", type: "Aquarium" },
+            "shuri": { name: "Château de Shuri (Okinawa)", duration: 90, waitTime: 15, crowdLevel: "Moyenne", type: "Château" },
+
+            // --- AUTRES INCONTOURNABLES (Alpes japonaises, Himeji, etc.) ---
+            "himeji": { name: "Château de Himeji", duration: 150, waitTime: 45, crowdLevel: "Forte", type: "Château" },
+            "shirakawa": { name: "Shirakawa-go", duration: 180, waitTime: 30, crowdLevel: "Forte", type: "Village traditionnel" },
+            "kenrokuen": { name: "Jardin Kenroku-en (Kanazawa)", duration: 120, waitTime: 15, crowdLevel: "Moyenne", type: "Jardin" },
+            "kanazawa castle": { name: "Château de Kanazawa", duration: 90, waitTime: 10, crowdLevel: "Faible", type: "Château" },
+            "higashi chaya": { name: "Higashi Chaya (Kanazawa)", duration: 90, waitTime: 15, crowdLevel: "Moyenne", type: "Quartier historique" },
+            "matsumoto": { name: "Château de Matsumoto", duration: 120, waitTime: 30, crowdLevel: "Moyenne", type: "Château" },
+            "jigokudani": { name: "Jigokudani (Singes des neiges)", duration: 120, waitTime: 20, crowdLevel: "Moyenne", type: "Nature / Faune" },
+            "kobe port": { name: "Port de Kobe / Meriken Park", duration: 90, waitTime: 0, crowdLevel: "Faible", type: "Promenade" },
+            "naoshima": { name: "Île de Naoshima (Art contemporain)", duration: 360, waitTime: 45, crowdLevel: "Forte", type: "Île / Musées" },
+            "koyasan": { name: "Mont Kōya (Okuno-in)", duration: 180, waitTime: 10, crowdLevel: "Moyenne", type: "Temple / Cimetière" }
+        };
+
+        async function analyzeAndAdd() {
+            const query = document.getElementById('placeName').value.trim().toLowerCase();
+            const msgEl = document.getElementById('api-msg');
+            const btn = document.getElementById('searchBtn');
+
+            if (query.length < 3) return alert("Veuillez taper un nom de lieu valide.");
+
+            btn.disabled = true;
+            msgEl.style.display = 'block';
+            msgEl.style.color = '#1976D2';
+            msgEl.innerText = 'Recherche et analyse de l\'affluence...';
+
+            let placeData = null;
+
+            // Étape 1 : Vérification dans notre base de données "Experte"
+            for (const key in japanHotspots) {
+                if (query.includes(key)) {
+                    placeData = { ...japanHotspots[key], source: 'db' };
+                    break;
+                }
+            }
+
+            // Étape 2 : Si non trouvé, on interroge OpenStreetMap en filet de sécurité
+            if (!placeData) {
+                try {
+                    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ' Japan')}&format=json&limit=1`;
+                    const response = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
+                    const data = await response.json();
+
+                    if (data && data.length > 0) {
+                        const osmPlace = data[0];
+                        const shortName = osmPlace.display_name.split(',')[0];
+                        placeData = deduceFromOSM(osmPlace.type, shortName);
+                    } else {
+                        throw new Error("Lieu introuvable");
+                    }
+                } catch (error) {
+                    msgEl.style.color = '#D32F2F';
+                    msgEl.innerText = `❌ Lieu non trouvé. Soyez plus précis (ex: ajoutez "Tokyo" ou "Kyoto").`;
+                    btn.disabled = false;
+                    return;
+                }
+            }
+
+            // Ajout à l'itinéraire
+            itinerary.push({
+                id: Date.now(),
+                name: placeData.name,
+                baseDuration: placeData.duration,
+                waitTime: placeData.waitTime,
+                crowdLevel: placeData.crowdLevel,
+                type: placeData.type
+            });
+
+            msgEl.style.color = '#4CAF50';
+            msgEl.innerText = `✨ Ajouté avec succès !`;
+            
+            document.getElementById('placeName').value = "";
+            renderTable();
+            setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
+            btn.disabled = false;
+        }
+
+        // 2. MOTEUR DE DÉDUCTION DE SECOURS (Basé sur OSM)
+        function deduceFromOSM(osmType, name) {
+            let duration = 60, wait = 10, crowd = "Moyenne", typeFr = "Attraction";
+
+            if (['theme_park'].includes(osmType)) { duration = 300; wait = 90; crowd = "Forte"; typeFr = "Parc d'attractions"; }
+            else if (['museum', 'castle'].includes(osmType)) { duration = 120; wait = 20; crowd = "Moyenne"; typeFr = "Culturel"; }
+            else if (['park', 'garden', 'nature_reserve'].includes(osmType)) { duration = 90; wait = 0; crowd = "Faible"; typeFr = "Parc / Nature"; }
+            else if (['place_of_worship', 'shrine', 'temple'].includes(osmType)) { duration = 60; wait = 15; crowd = "Moyenne"; typeFr = "Temple/Sanctuaire"; }
+            else if (['retail', 'commercial', 'mall', 'marketplace'].includes(osmType)) { duration = 150; wait = 10; crowd = "Forte"; typeFr = "Shopping / Quartier"; }
+            else if (['viewpoint', 'monument', 'artwork'].includes(osmType)) { duration = 20; wait = 5; crowd = "Faible"; typeFr = "Point de vue / Photo"; }
+
+            return { name: name, duration: duration, waitTime: wait, crowdLevel: crowd, type: typeFr, source: 'osm' };
+        }
+
+        // 3. AFFICHAGE ET CALCULS
+        function formatTime(minutes) {
+            const h = Math.floor(minutes / 60);
+            const m = Math.round(minutes % 60);
+            if (h === 0) return `${m} min`;
+            if (m === 0) return `${h}h`;
+            return `${h}h ${m < 10 ? '0'+m : m}min`;
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            const styleMultiplier = parseFloat(document.getElementById('style').value);
+            tableBody.innerHTML = "";
+            let totalMinutes = 0;
+
+            if (itinerary.length === 0) {
+                document.getElementById('resultsCard').style.display = "none";
+                return;
+            }
+
+            document.getElementById('resultsCard').style.display = "block";
+
+            itinerary.forEach(item => {
+                const adjustedDuration = item.baseDuration * styleMultiplier;
+                const totalPlaceTime = adjustedDuration + item.waitTime;
+                totalMinutes += totalPlaceTime;
+
+                const badgeClass = item.crowdLevel === "Forte" || item.crowdLevel === "Extrême" ? "badge high-crowd" : "badge";
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.type}<br><span class="${badgeClass}">Affluence ${item.crowdLevel}</span></td>
+                    <td>${formatTime(adjustedDuration)}</td>
+                    <td>+ ${item.waitTime} min</td>
+                    <td style="color: var(--primary-color); font-weight: bold;">${formatTime(totalPlaceTime)}</td>
+                    <td><button class="delete-btn" onclick="removeItem(${item.id})" title="Supprimer">✖</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('totalTimeDisplay').innerText = `Temps total estimé : ${formatTime(totalMinutes)}`;
+        }
+
+        function recalculateAll() {
+            renderTable(); // Recalcule tout en fonction du nouveau multiplicateur de rythme
+        }
+
+        function removeItem(id) {
+            itinerary = itinerary.filter(item => item.id !== id);
+            renderTable();
+        }
+    </script>
+</body>
+</html>
