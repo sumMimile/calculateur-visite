@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Japon avril 2027</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,6 +89,28 @@ ul.plain li{margin:4px 0}
 @media(max-width:899px){.board,.cols{grid-template-columns:minmax(0,1fr)}.side{position:static}}
 @media(max-width:700px){.head{grid-template-columns:minmax(0,1fr)}.kpis b{white-space:normal;font-size:20px}.kpis{text-align:left;grid-template-columns:repeat(3,minmax(0,1fr))}.seg .s{display:none}.seg{min-height:48px;padding:6px 5px}.seg .n{font-size:12px}.tick{height:40px;font-size:11px}.tick small{display:none}}
 @media(max-width:600px){table{font-size:13px}th,td{padding:6px 4px}.tt li{grid-template-columns:3.6em 10px minmax(0,1fr);}.tt .c{grid-column:3;text-align:left}.bars .r{grid-template-columns:7em minmax(0,1fr) 5.6em;font-size:14px}.bk li{grid-template-columns:28px minmax(0,1fr)}.bk .what{grid-column:2}}
+.v3d{background:#070b1c;color:#eef0fb}
+.v3d h2{color:#fff}
+.v3d .note{color:#a5abc8}
+.stage{position:relative;height:clamp(420px,62vh,620px);border-radius:12px;overflow:hidden;background:#070b1c;touch-action:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.lbls{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lb{position:absolute;transform:translate(-50%,-140%);background:rgba(7,11,28,.82);color:#fff;font-size:13px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;border:1px solid rgba(255,255,255,.25)}
+.lb.cur{background:#d9381e;border-color:#d9381e;font-size:14px;z-index:2}
+.hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;pointer-events:none}
+.hud>*{pointer-events:auto}
+.v3b{font:inherit;font-size:15px;font-weight:700;border:0;background:#fff;color:#151a33;border-radius:8px;padding:8px 14px;min-height:44px;cursor:pointer}
+.v3b:hover{background:#fde6ee}
+.v3b.pl{background:#d9381e;color:#fff}
+.card3{background:rgba(7,11,28,.86);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;flex:1 1 260px;min-width:0}
+.card3 b{display:block;font-size:16px;line-height:1.2}
+.card3 span{font-size:13px;color:#c9cde4}
+.v3sel{font:inherit;font-size:16px;background:#151a33;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:8px;max-width:100%}
+.modes{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:#c9cde4;margin-top:10px}
+.modes i{display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:3px}
+.v3top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:10px;margin-bottom:12px}
+.v3msg[hidden],.lb[hidden]{display:none}
+.v3msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c9cde4;font-size:15px;text-align:center;padding:20px}
 </style>
 
 <section class="band top">
@@ -110,6 +133,27 @@ ul.plain li{margin:4px 0}
     <span><i style="background:var(--ai)"></i>Transport</span><span><i style="background:var(--fj)"></i>Visite</span><span><i style="background:var(--os)"></i>Parc, billet</span><span><i style="background:var(--saku2)"></i>Repas</span><span><i style="background:var(--tor)"></i>Logistique</span><span><i style="background:var(--tr)"></i>Marge retard</span>
    </div>
   </div>
+ </div>
+</section>
+
+<section class="band v3d" id="v3d">
+ <div class="wrap">
+  <div class="v3top">
+   <div><h2 style="margin:0">Le voyage en 3D</h2><p class="note" style="margin:4px 0 0">Les vols, les trains et les bus, étape par étape. Glissez pour tourner, pincez ou molette pour zoomer.</p></div>
+   <label class="note" for="v3sel">Aller à <select id="v3sel" class="v3sel"></select></label>
+  </div>
+  <div class="stage" id="stage">
+   <div class="v3msg" id="v3msg">Chargement du globe…</div>
+   <div class="lbls" id="lbls"></div>
+   <div class="hud">
+    <button class="v3b" id="v3prev" type="button" aria-label="Étape précédente">◀</button>
+    <button class="v3b pl" id="v3play" type="button">▶ Lecture</button>
+    <button class="v3b" id="v3next" type="button" aria-label="Étape suivante">▶</button>
+    <div class="card3"><b id="v3name">—</b><span id="v3info"></span></div>
+    <button class="v3b" id="v3globe" type="button">Globe</button>
+   </div>
+  </div>
+  <div class="modes" id="v3modes"></div>
  </div>
 </section>
 
@@ -438,6 +482,7 @@ function show(i,scroll){
  $("dSleep").textContent=d.s;$("dPlanB").textContent=d.pb;
  $("dBookBox").hidden=!d.bk;$("dBook").innerHTML=(d.bk||[]).map(x=>`<li>${esc(x)}</li>`).join("");
  if(history.replaceState)history.replaceState(null,"","#j"+(cur+1));
+ if(window.__jp3dDay)window.__jp3dDay(cur);
  if(scroll)$("jour").scrollIntoView({behavior:"smooth",block:"start"});
 }
 $("prev").onclick=()=>show(cur-1);$("next").onclick=()=>show(cur+1);
@@ -465,7 +510,184 @@ function renderBk(){
  document.querySelectorAll(".bk input").forEach(x=>x.addEventListener("change",()=>{done[x.dataset.k]=x.checked;save();renderBk()}));
  const nx=bkS.find(b=>!done[b[2]]);$("kNext").textContent=nx?(new Date(nx[0]+"T00:00:00")<=today?"Maintenant":new Date(nx[0]+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})):"Tout est fait";
 }
+window.__showDay=i=>{if(i!==cur)show(i,false)};window.__fmtD=fmtD;
 budget();renderBk();
 const h=(location.hash.match(/^#j(\d+)$/)||[])[1];show(h?+h-1:1);
 }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(()=>{
+const MODES={avion:["Avion","#ffcc33"],shinkansen:["Shinkansen","#e5194b"],train:["Train","#1f5bd6"],metro:["Métro","#7b4fe0"],bus:["Bus","#13945f"],bateau:["Bateau","#0a8fbf"],cable:["Téléphérique","#e07b00"],pied:["À pied","#5b6180"]};
+// [nom, lon, lat, jour, mode d'arrivée, zoom, info]
+const S=[
+["Paris, CDG",2.55,49.01,0,"",.45,"Ven 2 avril · départ (LX633)"],
+["Zurich",8.55,47.46,0,"avion",.45,"Correspondance vers LX160"],
+["Aéroport de Narita T1",140.386,35.772,1,"avion",.06,"Sam 3 avril · 09:10, atterrissage"],
+["Hotel Palace Japan",139.800,35.728,1,"train",.012,"11:45 · Skyliner puis JR Jōban, dépôt des bagages"],
+["Parc d'Ueno",139.7738,35.7153,1,"metro",.006,"13:30 · hanami, étang Shinobazu"],
+["Sensō-ji, Asakusa",139.7966,35.7148,1,"metro",.006,"16:05 · Nakamise et le temple"],
+["Tokyo Skytree",139.8107,35.7101,1,"pied",.006,"17:40 · coucher de soleil"],
+["Meiji-jingū",139.6993,35.6764,2,"metro",.007,"Dim 4 avril · 08:45"],
+["Harajuku, Takeshita",139.7050,35.6712,2,"pied",.006,"13:00 · Takeshita, Kiddy Land, Cat Street"],
+["Rivière Meguro",139.6987,35.6440,2,"train",.006,"17:20 · cerisiers et lanternes"],
+["Ebisu Yokochō",139.7101,35.6467,2,"pied",.006,"18:40 · dîner"],
+["Shibuya Crossing",139.7005,35.6595,3,"metro",.006,"Lun 5 avril · 10:30, puis Shibuya Sky à 17:20"],
+["Shinjuku Gyoen",139.7100,35.6852,4,"metro",.007,"Mar 6 avril · 09:15"],
+["Tochō, 45e étage",139.6917,35.6896,4,"pied",.006,"12:45 · panorama gratuit"],
+["Kabukichō, Omoide Yokochō",139.7030,35.6950,4,"pied",.006,"16:30 · Godzilla, néons, yakitori"],
+["Tokyo DisneySea",139.8839,35.6267,5,"train",.012,"Mer 7 avril · journée entière"],
+["Enoshima",139.4800,35.2994,6,"train",.012,"Jeu 8 avril · 09:00, déjeuner au Fujimi-tei"],
+["Kamakurakōkōmae",139.5007,35.3067,6,"train",.007,"11:50 · Enoden face à la mer"],
+["Grand Bouddha, Hase-dera",139.5357,35.3165,6,"train",.007,"12:30 · Kannon et Daibutsu"],
+["Engaku-ji, Kita-Kamakura",139.5478,35.3379,6,"pied",.007,"15:45 · par le sentier du Daibutsu"],
+["Tsurugaoka Hachimangū",139.5563,35.3260,6,"train",.007,"16:40 · puis la rue Komachi"],
+["Musée Ghibli, Mitaka",139.5704,35.6962,7,"train",.012,"Ven 9 avril · 10:00, puis Inokashira"],
+["Akihabara",139.7714,35.6984,7,"train",.008,"14:45 · figurines, puis 2k540"],
+["Tokyo Station",139.7671,35.6812,7,"train",.006,"18:30 · Character Street"],
+["Pagode Chūreitō",138.8020,35.5011,8,"bus",.02,"Sam 10 avril · 10:00, bus depuis Shinjuku"],
+["Lac Kawaguchi, parc Oishi",138.7460,35.5260,8,"bus",.012,"13:00 · rive nord, vue sur le Fuji"],
+["Gotemba",138.9390,35.3000,8,"bus",.02,"15:10 · bus vers Hakone"],
+["Ryokan Hidamari Ichinoyu",139.0882,35.2259,8,"bus",.012,"18:30 · onsen et dîner"],
+["Ōwakudani",139.0221,35.2440,9,"cable",.012,"Dim 11 avril · Tozan, funiculaire, téléphérique"],
+["Lac Ashi, torii de Hakone",139.0255,35.2051,9,"bateau",.012,"13:00 · bateau pirate"],
+["Odawara",139.1553,35.2564,9,"bus",.015,"16:05 · vers le Shinkansen"],
+["Kyoto, Ikoi-no-Ie",135.7600,34.9960,9,"shinkansen",.025,"18:45 · Hikari, puis la guesthouse"],
+["Fushimi Inari-taisha",135.7727,34.9671,10,"train",.008,"Lun 12 avril · 07:00"],
+["Kiyomizu-dera",135.7850,34.9949,10,"train",.007,"10:30 · puis Sannenzaka et Ninenzaka"],
+["Gion, Pontochō",135.7751,35.0037,10,"pied",.006,"14:15 · Hanamikoji, Nishiki, Pontochō"],
+["Arashiyama",135.6717,35.0170,11,"train",.01,"Mar 13 avril · 07:45, bambouseraie"],
+["Kinkaku-ji",135.7292,35.0394,11,"bus",.008,"13:00 · le Pavillon d'or"],
+["Tō-ji, Kyoto Tower",135.7477,34.9805,11,"bus",.008,"15:50 · coucher de soleil depuis la tour"],
+["Ginkaku-ji",135.7982,35.0270,12,"bus",.008,"Mer 14 avril · 08:30, chemin des Philosophes"],
+["Palais impérial",135.7621,35.0254,12,"metro",.008,"12:50 · Gosho, puis Sanjūsangen-dō"],
+["Nara, Tōdai-ji",135.8398,34.6890,13,"train",.015,"Jeu 15 avril · biches, Grand Bouddha, Kasuga"],
+["Shinsekai, Tsūtenkaku",135.5063,34.6525,13,"train",.015,"18:15 · kushikatsu"],
+["Dōtonbori",135.5013,34.6687,13,"metro",.006,"20:15 · Glico, takoyaki"],
+["Universal Studios Japan",135.4323,34.6654,14,"train",.01,"Ven 16 avril · Super Nintendo World"],
+["Château d'Osaka",135.5259,34.6873,15,"metro",.008,"Sam 17 avril · 09:15"],
+["Shin-Osaka",135.5003,34.7334,15,"metro",.01,"14:51 · Nozomi"],
+["Tokyo Station",139.7671,35.6812,15,"shinkansen",.06,"17:21 · arrivée, bus vers Narita"],
+["Narita Tobu Hotel Airport",140.37,35.78,15,"bus",.02,"19:15 · dernière nuit"],
+["Zurich",8.55,47.46,16,"avion",.45,"Dim 18 avril · LX161, décollage à 11:00"],
+["Paris, CDG",2.55,49.01,16,"avion",.45,"LX646, retour à la maison"]
+];
+const $=id=>document.getElementById(id);
+const stage=$("stage"),msg=$("v3msg");
+if(!window.THREE){msg.textContent="La vue 3D n'a pas pu se charger (pas de connexion aux bibliothèques).";return}
+const T=THREE,R=1,D2R=Math.PI/180;
+const ll=(lon,lat,r)=>{const ph=(lon+180)*D2R,th=(90-lat)*D2R;return new T.Vector3(-Math.cos(ph)*Math.sin(th)*r,Math.cos(th)*r,Math.sin(ph)*Math.sin(th)*r)};
+let ren;try{ren=new T.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true})}catch(e){msg.textContent="WebGL n'est pas disponible sur cet appareil.";return}
+ren.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+stage.insertBefore(ren.domElement,stage.firstChild);
+const scene=new T.Scene();scene.background=new T.Color("#070b1c");
+const cam=new T.PerspectiveCamera(45,1,.00002,60);
+scene.add(new T.HemisphereLight(0xffffff,0x334466,1.1));
+const dl=new T.DirectionalLight(0xffffff,.6);dl.position.set(-3,2,4);scene.add(dl);
+// stars
+{const g=new T.BufferGeometry(),p=[];let sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;for(let i=0;i<1500;i++){const v=new T.Vector3(rnd()-.5,rnd()-.5,rnd()-.5).normalize().multiplyScalar(30);p.push(v.x,v.y,v.z)}g.setAttribute("position",new T.Float32BufferAttribute(p,3));scene.add(new T.Points(g,new T.PointsMaterial({color:0x8890b8,size:1.5,sizeAttenuation:false})))}
+const OCEAN="#0f2350",LAND="#f1ece0",COAST="#9a8f78";
+function paint(cv,rings,x0,y0,x1,y1,lw){const c=cv.getContext("2d"),W=cv.width,H=cv.height;c.fillStyle=OCEAN;c.fillRect(0,0,W,H);
+ c.strokeStyle="rgba(255,255,255,.07)";c.lineWidth=1;const st=(x1-x0)>100?15:1;
+ for(let x=Math.ceil(x0/st)*st;x<=x1;x+=st){const px=(x-x0)/(x1-x0)*W;c.beginPath();c.moveTo(px,0);c.lineTo(px,H);c.stroke()}
+ for(let y=Math.ceil(y0/st)*st;y<=y1;y+=st){const py=(y1-y)/(y1-y0)*H;c.beginPath();c.moveTo(0,py);c.lineTo(W,py);c.stroke()}
+ c.fillStyle=LAND;c.strokeStyle=COAST;c.lineWidth=lw;c.lineJoin="round";
+ const wrap=(x1-x0)>300;
+ rings.forEach(r=>{const u=[];let off=0;for(let i=0;i<r.length;i+=2){let x=r[i];if(i&&wrap){const p=u[u.length-2]-off;if(x-p>180)off-=360;else if(p-x>180)off+=360}u.push(x+off,r[i+1])}
+  (wrap?[0,-360,360]:[0]).forEach(o=>{c.beginPath();for(let i=0;i<u.length;i+=2){const px=(u[i]+o-x0)/(x1-x0)*W,py=(y1-u[i+1])/(y1-y0)*H;i?c.lineTo(px,py):c.moveTo(px,py)}c.closePath();c.fill();c.stroke()})});return c}
+const JB=[129,30,146,42];
+let ready=false;
+fetch("geo.json").then(r=>r.json()).then(G=>{
+ const cw=document.createElement("canvas");cw.width=4096;cw.height=2048;paint(cw,G.world,-180,-90,180,90,1.5);
+ const tw=new T.CanvasTexture(cw);tw.anisotropy=8;
+ scene.add(new T.Mesh(new T.SphereGeometry(R,96,64),new T.MeshBasicMaterial({map:tw})));
+ const cj=document.createElement("canvas");cj.width=4096;cj.height=Math.round(4096*(JB[3]-JB[1])/(JB[2]-JB[0]));
+ const c=paint(cj,G.jp,JB[0],JB[1],JB[2],JB[3],3);
+ const E=(lon,lat,rx,ry,rot)=>{c.fillStyle=OCEAN;c.beginPath();c.ellipse((lon-JB[0])/(JB[2]-JB[0])*cj.width,(JB[3]-lat)/(JB[3]-JB[1])*cj.height,rx*240,ry*240,rot,0,7);c.fill()};
+ E(138.76,35.515,.045,.008,-.3);E(139.0,35.215,.012,.03,.2);E(135.98,35.25,.13,.3,.1);
+ const patch=(cv,B,r)=>{const t=new T.CanvasTexture(cv);t.anisotropy=8;scene.add(new T.Mesh(new T.SphereGeometry(r,64,48,(B[0]+180)*D2R,(B[2]-B[0])*D2R,(90-B[3])*D2R,(B[3]-B[1])*D2R),new T.MeshBasicMaterial({map:t})))};
+ patch(cj,JB,R*1.00004);
+ [[138.4,34.8,140.7,36.1,1.00006],[135.2,34.4,136.1,35.2,1.00008]].forEach(B=>{const cv=document.createElement("canvas");cv.width=4096;cv.height=Math.round(4096*(B[3]-B[1])/(B[2]-B[0])/Math.cos(35*D2R));paint(cv,G.jp,B[0],B[1],B[2],B[3],4);
+  const k=cv.getContext("2d");k.fillStyle=OCEAN;[[138.76,35.515,.045,.008,-.3],[139.0,35.215,.012,.03,.2]].forEach(e=>{if(e[0]>B[0]&&e[0]<B[2]&&e[1]>B[1]&&e[1]<B[3]){k.beginPath();k.ellipse((e[0]-B[0])/(B[2]-B[0])*cv.width,(B[3]-e[1])/(B[3]-B[1])*cv.height,e[2]/(B[2]-B[0])*cv.width,e[3]/(B[3]-B[1])*cv.height,e[4],0,7);k.fill()}});
+  patch(cv,B,R*B[4])});
+ // Mont Fuji
+ const up=ll(138.7274,35.3606,1).normalize(),q=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),up);
+ const fuji=new T.Mesh(new T.ConeGeometry(.0019,.0008,48),new T.MeshLambertMaterial({color:0x5d6f99}));fuji.quaternion.copy(q);fuji.position.copy(up.clone().multiplyScalar(R+.0004));scene.add(fuji);
+ const cap=new T.Mesh(new T.ConeGeometry(.0006,.00026,48),new T.MeshLambertMaterial({color:0xffffff}));cap.quaternion.copy(q);cap.position.copy(up.clone().multiplyScalar(R+.0004+.00027));scene.add(cap);
+ msg.hidden=true;ready=true;build();go(cur3,false);
+}).catch(()=>{msg.textContent="Impossible de charger la carte (geo.json)."});
+// routes
+const segs=[];
+function build(){
+ for(let i=1;i<S.length;i++){
+  const a=S[i-1],b=S[i],va=ll(a[1],a[2],1).normalize(),vb=ll(b[1],b[2],1).normalize(),ang=va.angleTo(vb),m=b[4];
+  const n=m==="avion"?128:48,pts=[];
+  for(let k=0;k<=n;k++){const t=k/n,v=slerp(va,vb,t),h=m==="avion"?ang*.22*Math.sin(Math.PI*t):.00012+ang*.05*Math.sin(Math.PI*t);pts.push(v.multiplyScalar(R+.00008+h))}
+  const g=new T.BufferGeometry().setFromPoints(pts);
+  const line=new T.Line(g,new T.LineBasicMaterial({color:MODES[m][1],transparent:true,opacity:.9}));scene.add(line);segs[i]={pts,line};
+ }
+ const g=new T.BufferGeometry().setFromPoints(S.map(s=>ll(s[1],s[2],R+.0002)));
+ scene.add(new T.Points(g,new T.PointsMaterial({color:0xffffff,size:7,sizeAttenuation:false})));
+ const g2=new T.BufferGeometry().setFromPoints(S.map(s=>ll(s[1],s[2],R+.00021)));
+ scene.add(new T.Points(g2,new T.PointsMaterial({color:0x151a33,size:3,sizeAttenuation:false})));
+}
+const tokG=new T.BufferGeometry().setFromPoints([new T.Vector3()]);
+const tok=new T.Points(tokG,new T.PointsMaterial({color:0xd9381e,size:16,sizeAttenuation:false,depthTest:false}));tok.renderOrder=9;scene.add(tok);
+function slerp(a,b,t){const ang=a.angleTo(b);if(ang<1e-7)return a.clone();const s=Math.sin(ang);return a.clone().multiplyScalar(Math.sin((1-t)*ang)/s).add(b.clone().multiplyScalar(Math.sin(t*ang)/s))}
+function frame(tgtUnit,h){const up=tgtUnit.clone().normalize();let east=new T.Vector3(0,1,0).cross(up);if(east.lengthSq()<1e-9)east.set(1,0,0);east.normalize();const north=up.clone().cross(east).normalize();
+ const tilt=h>.2?0:.75;return up.clone().multiplyScalar(R+h*(tilt?.75:1)).add(north.multiplyScalar(-h*tilt));}
+// controls
+let ctl=null;
+function mkCtl(target){if(ctl)ctl.dispose();cam.up.set(0,1,0);ctl=new T.OrbitControls(cam,ren.domElement);ctl.target.copy(target);ctl.enableDamping=true;ctl.dampingFactor=.12;ctl.enablePan=false;ctl.minDistance=.0012;ctl.maxDistance=6;ctl.rotateSpeed=.6;ctl.zoomSpeed=1.1;ctl.update()}
+// labels
+const lbls=$("lbls"),lbEls=S.map((s,i)=>{const d=document.createElement("div");d.className="lb";d.textContent=s[0];d.hidden=true;lbls.appendChild(d);return d});
+// state
+let cur3=2,anim=null,playing=false,playT=null;
+const sel=$("v3sel");
+sel.innerHTML=S.map((s,i)=>`<option value="${i}">${s[3]+2} avr · ${s[0].replace(/[<>&]/g,"")}</option>`).join("");
+$("v3modes").innerHTML=Object.values(MODES).map(m=>`<span><i style="background:${m[1]}"></i>${m[0]}</span>`).join("");
+function info(i){const s=S[i];$("v3name").textContent=s[0];$("v3info").textContent=s[6]+(s[4]?" · arrivée en "+MODES[s[4]][0].toLowerCase():"");sel.value=i}
+function go(i,animate=true){
+ i=Math.max(0,Math.min(S.length-1,i));const from=cur3;cur3=i;info(i);
+ if(window.__showDay)window.__showDay(S[i][3]);
+ if(!ready)return;
+ const s=S[i],tgt=ll(s[1],s[2],R),h1=s[5];
+ if(!animate||!ctl){cam.position.copy(frame(tgt,h1));mkCtl(tgt);anim=null;tok.position.copy(ll(s[1],s[2],R+.0003));return}
+ const p0=ctl.target.clone().normalize(),p1=tgt.clone().normalize(),h0=Math.max(.001,cam.position.length()-R),ang=p0.angleTo(p1);
+ const seg=(i===from+1)?segs[i]:(i===from-1&&segs[from])?{pts:segs[from].pts.slice().reverse()}:null;
+ const dur=Math.min(4200,900+ang*2600+(seg?400:0));ctl.enabled=false;
+ anim={t0:performance.now(),dur,p0,p1,h0,h1,bump:Math.min(1.4,ang*.9),seg};
+}
+function step(now){
+ if(!anim)return;let t=Math.min(1,(now-anim.t0)/anim.dur);const e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+ const tg=slerp(anim.p0,anim.p1,e);const h=Math.exp(Math.log(anim.h0)*(1-e)+Math.log(anim.h1)*e)+anim.bump*Math.sin(Math.PI*e);
+ cam.position.copy(frame(tg,h));cam.up.set(0,1,0);cam.lookAt(tg.clone().multiplyScalar(R));
+ if(anim.seg){const P=anim.seg.pts,k=Math.min(P.length-1,Math.floor(e*(P.length-1)));tok.position.copy(P[k])}else tok.position.copy(tg.clone().multiplyScalar(R+.0003));
+ if(t>=1){const s=S[cur3];tok.position.copy(ll(s[1],s[2],R+.0003));mkCtl(tg.clone().multiplyScalar(R));anim=null}
+}
+function play(on){playing=on;$("v3play").textContent=on?"❚❚ Pause":"▶ Lecture";clearTimeout(playT);if(on)tick()}
+function tick(){if(!playing)return;if(anim){playT=setTimeout(tick,300);return}if(cur3>=S.length-1){play(false);return}go(cur3+1);playT=setTimeout(tick,1800)}
+$("v3prev").onclick=()=>{play(false);go(cur3-1)};$("v3next").onclick=()=>{play(false);go(cur3+1)};
+$("v3play").onclick=()=>{if(!playing&&cur3>=S.length-1)go(0,false);play(!playing)};
+sel.onchange=()=>{play(false);go(+sel.value)};
+$("v3globe").onclick=()=>{play(false);if(!ready)return;const p=ctl.target.clone().normalize();anim={t0:performance.now(),dur:1600,p0:p,p1:p.clone(),h0:Math.max(.001,cam.position.length()-R),h1:2.4,bump:0,seg:null}};
+window.__jp3dDay=d=>{if(S[cur3][3]===d)return;const i=S.findIndex(s=>s[3]===d&&s[4]!=="");if(i>=0){play(false);go(i)}};
+function size(){const w=stage.clientWidth,h=stage.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+new ResizeObserver(size).observe(stage);size();
+let vis=true;new IntersectionObserver(es=>{vis=es[0].isIntersecting}).observe(stage);
+const tmp=new T.Vector3();
+function labels(){
+ const w=stage.clientWidth,h=stage.clientHeight,cp=cam.position,alt=cp.length()-R,d=S[cur3][3];
+ S.forEach((s,i)=>{const el=lbEls[i];const show=i===cur3||(alt<.08&&s[3]===d)||(alt>=.08&&(i===0||i===1||i===2||i===31||i===43));
+  if(!show){el.hidden=true;return}
+  const p=ll(s[1],s[2],R+.0002);if(p.clone().normalize().dot(tmp.copy(cp).sub(p))<0){el.hidden=true;return}
+  tmp.copy(p).project(cam);if(tmp.z>1||Math.abs(tmp.x)>1.1||Math.abs(tmp.y)>1.1){el.hidden=true;return}
+  el.hidden=false;el.className="lb"+(i===cur3?" cur":"");el.style.left=((tmp.x+1)/2*w)+"px";el.style.top=((1-tmp.y)/2*h)+"px"});
+}
+info(cur3);
+function loop(now){requestAnimationFrame(loop);if(!vis||!ready)return;step(now);if(ctl&&!anim)ctl.update();ren.render(scene,cam);labels()}
+requestAnimationFrame(loop);
+})();
 </script>
