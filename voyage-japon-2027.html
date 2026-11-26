@@ -1,0 +1,471 @@
+<title>Japon avril 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday travel, practical and warm
+   IDEA a JR line map + station departure board: the trip is a rail line at true time scale, each day a timetable
+   PICTURE the 17-day line, segments sized by nights, each day a clickable station tick
+   COLOUR white ground, indigo ai ink, sakura pink fields, vermilion torii accent; night = deep indigo
+   TYPE Zen Kaku Gothic New 900 display + same family text
+   LAYOUT title band + full-width line; then day board (timetable left, day card right at 900+); phone stacks */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0e1224);--ink:light-dark(#151a33,#eef0fb);--mute:light-dark(#5b6180,#a5abc8);
+--ai:light-dark(#1f3a93,#8ea8ff);--saku:light-dark(#fde6ee,#3a1f33);--saku2:light-dark(#e86a92,#ff9cbc);
+--tor:light-dark(#d9381e,#ff7a5c);--line:light-dark(#e3e5ef,#262c4a);--card:light-dark(#f6f7fc,#151a33);
+--tk:light-dark(#1f3a93,#8ea8ff);--fj:light-dark(#2b8a6e,#5fd3ae);--ky:light-dark(#d9381e,#ff7a5c);--os:light-dark(#c98a00,#ffc94d);--tr:light-dark(#8a8fa8,#6c7290)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 "Zen Kaku Gothic New",system-ui,sans-serif;overflow-x:clip;margin:0}
+.band{padding-block:clamp(24px,4vw,56px);padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-weight:900;font-size:clamp(34px,5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:0 0 8px}
+h2{font-weight:900;font-size:clamp(24px,3vw,32px);line-height:1.1;letter-spacing:-.01em;margin:0 0 14px}
+h3{font-size:18px;margin:0 0 6px}
+.top{background:var(--saku);margin-top:calc(-1*env(safe-area-inset-top,0px));padding-top:calc(env(safe-area-inset-top,0px) + 2.2rem)}
+.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end}
+.lede{max-width:62ch;margin:0;color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(3,auto);gap:4px 22px;text-align:right}
+.kpis b{font-size:26px;font-weight:900;display:block;line-height:1.1;white-space:nowrap}
+.kpis span{font-size:13px;color:var(--mute)}
+.rail{margin-top:26px}
+.segs{display:grid;gap:3px}
+.seg{border-radius:6px;padding:8px 8px 6px;color:#fff;position:relative;min-height:66px}
+.seg .n{font-weight:900;font-size:15px;line-height:1.1;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg .s{font-size:12px;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.ticks{display:grid;grid-template-columns:repeat(17,minmax(0,1fr));gap:3px;margin-top:8px}
+.tick{border:2px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:999px;height:44px;font:700 13px/1 inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
+.tick small{font-size:10px;font-weight:500;color:var(--mute)}
+.tick:hover{background:var(--card)}
+.tick[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tick[aria-pressed=true] small{color:var(--bg)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--mute);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
+.board{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:28px;align-items:start}
+.dayhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin-bottom:4px}
+.dayhead .city{font-weight:700;color:#fff;border-radius:4px;padding:2px 8px;font-size:14px}
+.nav{display:flex;gap:8px;margin:10px 0 16px}
+.nav button,.btn{font:inherit;font-size:15px;border:2px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:8px;padding:8px 14px;min-height:44px;cursor:pointer}
+.nav button:hover,.btn:hover{background:var(--card)}
+.tt{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink)}
+.tt li{display:grid;grid-template-columns:4.2em 14px minmax(0,1fr) auto;gap:0 12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:start}
+.tt .t{font-weight:900;font-variant-numeric:tabular-nums;font-size:17px;white-space:nowrap}
+.tt .dot{width:12px;height:12px;border-radius:50%;margin-top:6px}
+.tt .w b{font-weight:700}
+.tt .w p{margin:2px 0 0;font-size:14px;color:var(--mute)}
+.tt .c{font-size:14px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--mute)}
+.tt li.buf{background:var(--saku)}
+.tt li.buf .w b{color:var(--saku2)}
+.side{position:sticky;top:12px;display:grid;gap:14px}
+.box{background:var(--card);border-radius:10px;padding:16px}
+.box p{margin:6px 0 0;font-size:15px}
+.sum{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;font-size:15px}
+.sum .tot{font-weight:900;font-size:18px;border-top:2px solid var(--ink);padding-top:6px}
+.num{white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:4px;background:var(--tor);color:#fff;margin-left:6px;vertical-align:2px}
+.alt{background:var(--saku)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--mute);font-weight:700;border-bottom:2px solid var(--ink)}
+td.num,th.num{text-align:right}
+.bars .r{display:grid;grid-template-columns:9em minmax(0,1fr) 6.5em;gap:10px;align-items:center;margin:8px 0;font-size:15px}
+.bars .b{height:16px;border-radius:3px;background:var(--ai)}
+.rate{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0 0 16px}
+.rate input{font:inherit;font-size:16px;width:6.5em;padding:8px;border:2px solid var(--ink);border-radius:8px;background:var(--bg);color:var(--ink)}
+.bk{list-style:none;padding:0;margin:0}
+.bk li{display:grid;grid-template-columns:28px 8.5em minmax(0,1fr);gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.bk input{width:22px;height:22px;margin-top:3px;accent-color:var(--tor)}
+.bk .when{font-weight:900;white-space:nowrap}
+.bk .when small{display:block;font-weight:500;font-size:13px;color:var(--mute);white-space:normal}
+.bk li.done .what{text-decoration:line-through;color:var(--mute)}
+.bk .soon{color:var(--tor)}
+.chk li{grid-template-columns:28px minmax(0,1fr)}
+.note{font-size:13px;color:var(--mute)}
+ul.plain{margin:6px 0 0;padding-left:18px}
+ul.plain li{margin:4px 0}
+@media(max-width:899px){.board,.cols{grid-template-columns:minmax(0,1fr)}.side{position:static}}
+@media(max-width:700px){.head{grid-template-columns:minmax(0,1fr)}.kpis b{white-space:normal;font-size:20px}.kpis{text-align:left;grid-template-columns:repeat(3,minmax(0,1fr))}.seg .s{display:none}.seg{min-height:48px;padding:6px 5px}.seg .n{font-size:12px}.tick{height:40px;font-size:11px}.tick small{display:none}}
+@media(max-width:600px){table{font-size:13px}th,td{padding:6px 4px}.tt li{grid-template-columns:3.6em 10px minmax(0,1fr);}.tt .c{grid-column:3;text-align:left}.bars .r{grid-template-columns:7em minmax(0,1fr) 5.6em;font-size:14px}.bk li{grid-template-columns:28px minmax(0,1fr)}.bk .what{grid-column:2}}
+</style>
+
+<section class="band top">
+ <div class="wrap">
+  <div class="head">
+   <div>
+    <h1>Japon, 2 → 18 avril 2027</h1>
+    <p class="lede">Tokyo, Fuji, Hakone, Kyoto, Nara et Osaka en duo frère et sœur. Chaque journée est minutée avec ses marges, ses prix et ses réservations. Touchez un jour sur la ligne.</p>
+   </div>
+   <div class="kpis">
+    <div><b>15</b><span>nuits</span></div>
+    <div><b id="kTot">—</b><span>budget sur place, duo</span></div>
+    <div><b id="kNext">—</b><span>prochaine réservation</span></div>
+   </div>
+  </div>
+  <div class="rail" aria-label="Ligne du voyage">
+   <div class="segs" id="segs"></div>
+   <div class="ticks" id="ticks"></div>
+   <div class="legend">
+    <span><i style="background:var(--ai)"></i>Transport</span><span><i style="background:var(--fj)"></i>Visite</span><span><i style="background:var(--os)"></i>Parc, billet</span><span><i style="background:var(--saku2)"></i>Repas</span><span><i style="background:var(--tor)"></i>Logistique</span><span><i style="background:var(--tr)"></i>Marge retard</span>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="band" id="jour">
+ <div class="wrap board">
+  <div>
+   <div class="dayhead"><h2 id="dTitle">—</h2></div>
+   <div class="dayhead"><span class="city" id="dCity"></span><span id="dDate" class="note"></span></div>
+   <div class="nav"><button id="prev" type="button">← Veille</button><button id="next" type="button">Lendemain →</button></div>
+   <ol class="tt" id="tt"></ol>
+  </div>
+  <aside class="side">
+   <div class="box"><h3>Coût du jour</h3><div class="sum" id="dSum"></div><p class="note">Par personne : adulte / ado (15–16 ans). Les prix sont en yens, convertis au taux choisi plus bas.</p></div>
+   <div class="box"><h3>Dormir</h3><p id="dSleep"></p></div>
+   <div class="box alt"><h3>Si ça déraille</h3><p id="dPlanB"></p></div>
+   <div class="box" id="dBookBox"><h3>À réserver pour ce jour</h3><ul class="plain" id="dBook"></ul></div>
+  </aside>
+ </div>
+</section>
+
+<section class="band" style="background:var(--card)">
+ <div class="wrap">
+  <h2 id="budTitle">Budget sur place</h2>
+  <div class="rate"><label for="rate">Taux de change : 1 € =</label><input id="rate" type="number" min="100" max="250" step="1" value="172"><span>¥</span><span class="note">Hôtels (1 003 €) et vols déjà payés : hors de ce total.</span></div>
+  <div class="cols">
+   <div class="bars" id="bars"></div>
+   <div class="scroll"><table id="budT"></table></div>
+  </div>
+  <p class="note">Les prix officiels ont été vérifiés le 26/11/2026. Les montants marqués « est. » sont des estimations : repas, Express Pass, tarifs de transport non publiés. Prévoir en plus le shopping, les souvenirs et les figurines.</p>
+ </div>
+</section>
+
+<section class="band">
+ <div class="wrap cols">
+  <div>
+   <h2>Calendrier des réservations</h2>
+   <p class="note">Les heures sont données en heure du Japon (JST) puis en heure de Paris. Le Japon a 8 h d'avance jusqu'au 28 mars, puis 7 h. Les cases cochées sont mémorisées sur cet appareil uniquement.</p>
+   <ul class="bk" id="bk"></ul>
+  </div>
+  <div>
+   <h2>Avant de partir</h2>
+   <ul class="bk chk" id="chk"></ul>
+   <h2 style="margin-top:28px">Hypothèses à confirmer</h2>
+   <ul class="plain">
+    <li>Les heures de correspondance de LX633 (aller) et LX646 (retour) à Zurich ne sont pas connues : elles sont à recopier depuis le billet.</li>
+    <li>Hidamari Ichinoyu : vérifier sur la réservation si le dîner est inclus. Prévenir le ryokan d'une arrivée vers 18h30.</li>
+    <li>OASIS NANIWA n'a pas de personnel sur place. On ne peut donc pas y faire livrer les valises : elles partent directement à l'hôtel de Narita.</li>
+    <li>Narita Tobu Hotel Airport : confirmer par e-mail que l'hôtel réceptionne un colis Yamato pour des clients arrivant le 17.</li>
+    <li>Le Hakone Freepass numérique couvrirait le bus depuis Gotemba : c'est à vérifier.</li>
+    <li>Dates 2027 non encore publiées : sakura à Kawaguchiko, illuminations, expositions du musée national de Kyoto.</li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<script>
+{
+const R=(t,ti,de,k,a,b,o)=>Object.assign({t,ti,de,k,a:a||0,b:b===undefined?(a||0):b},o||{});
+const SEG=[["Vol",0,1,"var(--tr)","2 avril","CDG → ZRH → NRT"],["Tokyo",1,7,"var(--tk)","3–9 avril","Hotel Palace Japan"],["Fuji · Hakone",8,2,"var(--fj)","10–11","Hidamari Ichinoyu"],["Kyoto",10,3,"var(--ky)","12–14","Ikoi-no-Ie"],["Nara · Osaka",14,3,"var(--os)","15–17","OASIS NANIWA, puis Narita"],["Retour",16,1,"var(--tr)","18 avril","NRT → ZRH → CDG"]];
+const D=[
+{d:"2027-04-02",c:"Paris → vol",col:"var(--tr)",ti:"Départ : Malakoff → Zurich → Narita",s:"Dans l'avion (LX160).",pb:"Si LX633 est en retard et que la correspondance à Zurich saute, Swiss replace sur le vol suivant (billet unique) : garder les cartes d'embarquement. Une nuit en avion n'a aucun impact sur les hôtels.",st:[
+R("H−3h","Quitter Malakoff","RER B jusqu'à CDG, environ 1 h (Navigo ou ticket aéroport). Prévoir le taxi si grève.","tr",0,0,{e:14}),
+R("H−2h","Enregistrement Swiss, CDG","Passeports, AST de la mineure avec la copie de la pièce d'identité du parent signataire, QR Visit Japan Web.","lo"),
+R("—","LX633 Paris → Zurich, puis LX160 Zurich → Narita","À Zurich, passage du contrôle de sortie Schengen. Régler les montres sur +7 h et dormir le plus possible.","tr"),
+R("—","Marge","Correspondance : garder au moins 1 h à Zurich. Repas inclus à bord.","bu")]},
+{d:"2027-04-03",c:"Tokyo",col:"var(--tk)",ti:"Arrivée, Ueno, Asakusa, Skytree",s:"Hotel Palace Japan, Minami-Senju (check-in 15h–23h).",pb:"Fatigue du décalage : supprimer Ameyoko et aller directement à Asakusa. Si la file d'immigration déborde après 11h15, déjeuner à Nippori et commencer à 14h par Asakusa. Si la météo bouche la vue, décaler le Skytree à 20h (billet modifiable selon les conditions).",bk:["Skytree, créneau 17:30 (environ 1 mois avant)","Skyliner, e-ticket (réduction en ligne)","SIM physique 4G : retrait à Narita T1 (commandée début mars)"],st:[
+R("09:10","Atterrissage Narita T1","","tr"),
+R("09:10","Immigration, bagages, douane","Compter 60–80 min. Avoir le QR Visit Japan Web ouvert sur le téléphone.","bu"),
+R("10:30","SIM physique 4G, yens, carte Suica","Retirer la SIM data physique commandée (Sakura Mobile au comptoir de T1, ou équivalent) et l'installer tout de suite, en gardant la SIM française dans une pochette. Une SIM pour deux avec partage de connexion ; une 2e SIM pour ta sœur double ce poste. Retirer environ 40 000 ¥ au distributeur Seven Bank. Acheter une Suica chacun et la charger de 3 000 ¥ (la recharge sert ensuite aux trajets).","lo",6500,0,{est:1}),
+R("11:00","Skyliner Narita → Nippori","41 min. Tarif à partir du 13/03/2027.","tr",2780,2780),
+R("11:45","JR Jōban Nippori → Minami-Senju, puis 7 min à pied","Déposer les valises à l'hôtel (bagagerie avant le check-in).","tr",170,170),
+R("12:30","Métro Hibiya → Ueno, déjeuner","Ramen ou teishoku près de la gare.","re",1300,1300),
+R("13:30","Parc d'Ueno et étang Shinobazu","Hanami (fin de floraison probable), Kiyomizu Kannon-dō et son pin lunaire. Durée notée : 1h45, ramenée à 1h30.","vi"),
+R("15:00","Ameyoko","Rue marchande et street food. Durée notée : 65 min, ramenée à 50 min.","re",800,800),
+R("15:50","Ligne Ginza Ueno → Asakusa","","tr",180,180),
+R("16:05","Nakamise et Sensō-ji","Durée notée : 1 h. Omikuji 100 ¥. Les boutiques ferment vers 19h.","vi",100,100),
+R("17:15","À pied le long de la Sumida jusqu'au Skytree","Parc Sumida (sakura), puis le pont Azuma. 25 min.","tr"),
+R("17:40","Tokyo Skytree, Tembo Deck","Coucher de soleil vers 18h00. Durée notée : 2h15, ramenée à 1h30. Ta sœur paie le tarif adulte (≥15 ans). Tarif du week-end, réservé à l'avance.","pa",2300,2300),
+R("19:15","Dîner à Solamachi","Au pied de la tour.","re",1600,1600),
+R("20:15","Retour à Minami-Senju","Tōbu Skytree Line → Kita-Senju, puis 1 station sur la ligne Hibiya. Sinon taxi, environ 2 000 ¥ pour deux.","tr",400,400),
+R("20:45","Check-in, dodo","","lo")]},
+{d:"2027-04-04",c:"Tokyo",col:"var(--tk)",ti:"Meiji-jingū, Yoyogi, Harajuku, Naka-Meguro",s:"Hotel Palace Japan.",pb:"Dimanche, Takeshita est bondée : y aller dès 12h30 ou la traverser seulement. En cas de pluie, remplacer Yoyogi et la Meguro par Omotesandō Hills et Laforet. Si les sakura de la Meguro sont fanés, filer directement à Ebisu.",st:[
+R("08:00","Hibiya → Hibiya, puis Chiyoda → Meiji-jingūmae","Environ 40 min.","tr",260,260),
+R("08:45","Meiji-jingū","Gratuit. Tôt le matin, il y a peu de monde, et parfois un mariage shinto.","vi"),
+R("10:00","Jardin Meiji Jingu Gyoen","Le puits de Kiyomasa. Tarif non revérifié.","vi",1000,1000,{est:1}),
+R("10:40","Parc Yoyogi","Pique-niques de hanami et danseurs rockabilly le dimanche.","vi"),
+R("12:00","Déjeuner : Gonpachi Nori-temaki Harajuku","Repère de ton KML.","re",2000,2000,{est:1}),
+R("13:00","Takeshita Street","Crêpes et mode kawaii.","re",700,700),
+R("14:15","Tōgō-jinja","Le marché aux puces tombe souvent le 1er dimanche : à vérifier.","vi"),
+R("14:45","Kiddy Land","Quatre étages de jouets et de licences.","vi"),
+R("15:30","Omotesandō, Ura-Harajuku, Cat Street","Friperies cachées, Graniph.","vi"),
+R("16:50","Marge","Shopping qui déborde.","bu"),
+R("17:10","Tōkyū Toyoko Shibuya → Naka-Meguro","1 station.","tr",140,140),
+R("17:20","Rivière Meguro","Allée de cerisiers, lanternes à la tombée de la nuit (si la floraison tient encore).","vi"),
+R("18:40","Ebisu Yokochō, dîner","Ruelle de petits restos. Ta sœur peut y entrer accompagnée, mais pas d'alcool.","re",2500,2500,{est:1}),
+R("20:15","Ligne Hibiya directe Ebisu → Minami-Senju","Environ 40 min, sans changement.","tr",260,260)]},
+{d:"2027-04-05",c:"Tokyo",col:"var(--tk)",ti:"Shibuya, journée pop culture",s:"Hotel Palace Japan.",pb:"Si le ciel est bouché au moment du Shibuya Sky : demander au guichet un changement de créneau (sous réserve de places). Gyukatsu Motomura peut avoir 1 h de file : se replier sur Uobei, ou Ichiran juste à côté. Street Kart est exclu : il faut un permis international et être majeur.",bk:["Shibuya Sky, créneau 17:20 (ventes 4 semaines avant)"],st:[
+R("09:30","Hibiya → Ueno, puis ligne Ginza → Shibuya","Environ 50 min.","tr",260,260),
+R("10:30","Hachikō et Shibuya Crossing","Le traverser, puis le regarder depuis la passerelle de Mark City. Durée notée : 1 h.","vi"),
+R("11:30","Shibuya 109 et Center Gai","","vi"),
+R("12:00","Village Vanguard","Boutique bazar. Durée notée : 15 min.","vi"),
+R("12:15","Déjeuner : Uobei","Sushis livrés par rails express. Durée notée : 1h15 avec la file.","re",1300,1300),
+R("13:30","Adores Shibuya","Arcade sur plusieurs étages, purikura. Durée notée : 1 h.","vi",1000,1000),
+R("14:30","Jump Shop","Durée notée : 15 min.","vi"),
+R("14:45","Shibuya Parco","Nintendo TOKYO, Pokémon Center, Capcom Store.","vi"),
+R("15:45","Tower Records, puis Loft","Papeterie et objets mignons du quotidien.","vi"),
+R("16:45","Miyashita Park","Jardin sur le toit et boutique GBL (Ghibli). Durée notée : 1h15, ramenée à 30 min.","vi"),
+R("17:20","Shibuya Sky","Coucher de soleil vers 18h05. Rester jusqu'à la nuit. Tarif en ligne après 15h ; un tarif collégien/lycéen réduit existe peut-être.","pa",3400,3400),
+R("18:50","Nonbei Yokochō","Ruelle de bars. On s'y promène pour les photos, sans s'arrêter.","vi"),
+R("19:10","Dîner : Gyukatsu Motomura","Prévoir 30–60 min de file.","re",2000,2000),
+R("20:45","Retour par les lignes Ginza puis Hibiya","","tr",260,260)]},
+{d:"2027-04-06",c:"Tokyo",col:"var(--tk)",ti:"Shinjuku : jardin, panorama, néons",s:"Hotel Palace Japan.",pb:"Le 1er mardi du mois, l'observatoire Sud est fermé : aller au Nord (9h30–17h, donc avant 16h30). Si le Fuji est visible le matin, inverser Gyoen et Tochō. À Kabukichō : rester sur les grands axes, ignorer les rabatteurs et quitter le quartier vers 20h.",st:[
+R("08:30","Hibiya → Ginza, puis Marunouchi → Shinjuku-gyoenmae","Environ 45 min.","tr",260,260),
+R("09:15","Shinjuku Gyoen","Sakura tardifs. Ouvert en semaine sans réservation. Durée notée : 1h30. Le tarif ado est de 250 ¥ seulement avec une carte étudiante.","vi",500,500),
+R("10:45","Marche vers l'ouest de Shinjuku","","tr"),
+R("11:30","Déjeuner près de la gare","Ramen, ou le sous-sol alimentaire d'un grand magasin.","re",1300,1300),
+R("12:45","Observatoire du Tochō, 45e étage","Gratuit. Vue sur la ville et, par temps clair, sur le Fuji. Durée notée : 1h30, ramenée à 45 min.","vi"),
+R("13:35","Shinjuku Central Park","Et le sanctuaire Kumano.","vi"),
+R("14:15","Marge, puis traversée vers l'est","20 min à pied.","bu"),
+R("14:45","Batting center de Kabukichō","Frapper des balles de baseball, environ 300 ¥ les 20 balles.","vi",600,600),
+R("15:30","Don Quijote","Achats détaxés (montrer le passeport). Durée notée : 30 min.","vi"),
+R("16:15","Cross Shinjuku Vision","Chat géant en 3D. Durée notée : 15 min.","vi"),
+R("16:30","Tête de Godzilla et Tokyu Kabukicho Tower","Durée notée : 1h15 pour la tour.","vi"),
+R("17:45","Omoide Yokochō, dîner","Yakitori. Durée notée : 1h15.","re",2000,2000),
+R("19:10","Golden Gai","Promenade seulement : les bars sont réservés aux majeurs ou font payer l'entrée.","vi"),
+R("19:40","JR Yamanote → Nippori, puis Jōban → Minami-Senju","Coucher tôt : DisneySea le lendemain.","tr",260,260)]},
+{d:"2027-04-07",c:"Tokyo",col:"var(--tk)",ti:"Tokyo DisneySea",s:"Hotel Palace Japan.",pb:"En cas de pluie, le parc reste fréquenté mais les files raccourcissent. Si Premier Access est épuisé pour Frozen, faire Soaring en file standby dès l'ouverture. Dernier train vers Minami-Senju vers 0h : pas de stress.",bk:["Billet DisneySea : ventes le 07/02/2027 à 14:00 JST","Premier Access : dans l'app le jour J (ou avant, si l'option 2026 est maintenue)"],st:[
+R("07:30","Hibiya → Hatchōbori, puis JR Keiyō → Maihama","Environ 45 min. Long couloir entre les quais à Hatchōbori.","tr",400,400),
+R("08:15","Disney Resort Line, puis portes du parc","Ouverture vers 9h (parfois 8h30). Installer l'app Tokyo Disney Resort la veille.","tr",300,300),
+R("09:00","Fantasy Springs : Frozen Journey","Acheter Premier Access dans l'app dès l'entrée. Ensuite Soaring : Fantastic Flight (PA ou standby).","pa",2000,2000,{est:1}),
+R("09:00","Billet 1-Day Passport","Tarif dynamique. Ta sœur a le tarif junior 12–17 ans (7 900–10 900 ¥ adulte, 6 600–9 000 ¥ junior). Estimation haute pour un mercredi des vacances japonaises.","pa",10900,9000),
+R("11:00","Déjeuner tôt","Pour éviter les foules de midi.","re",2000,2000),
+R("12:00","Journey to the Center of the Earth, Indiana Jones, Raging Spirits","","vi"),
+R("15:00","Toy Story Mania, Tower of Terror","Goûter : gyoza-dog, popcorn.","re",1200,1200),
+R("18:00","Dîner dans le parc","","re",2500,2500),
+R("19:30","Spectacle de nuit sur le Mediterranean Harbor","Horaires dans l'app.","vi"),
+R("21:00","Retour par Maihama, Hatchōbori et Hibiya","","tr",700,700),
+R("22:15","Hôtel","","lo")]},
+{d:"2027-04-08",c:"Excursion",col:"var(--fj)",ti:"Enoshima puis Kamakura",s:"Hotel Palace Japan.",pb:"Le KML est respecté mais parcouru à l'envers : Enoshima le matin, pour avoir le Fuji bien visible et déjeuner au Fujimi-tei (dernière commande à 16h30). Si vous êtes en retard après Hase-dera, prendre l'Enoden jusqu'à la gare de Kamakura, puis le JR jusqu'à Kita-Kamakura pour Engaku-ji. Engaku-ji ferme à 16h30 : c'est la seule contrainte dure. Kaizō-ji est en option. Par temps de pluie, le sentier est glissant : prendre le bus Hase → gare de Kamakura.",bk:["Enoshima-Kamakura Freepass (Odakyu), achat sur place"],st:[
+R("06:45","Jōban/Yamanote → Shinjuku","","tr",260,260),
+R("07:50","Odakyu Shinjuku → Katase-Enoshima","Environ 1h10, avec l'Enoshima-Kamakura Freepass (Enoden illimité inclus).","tr",1640,1640),
+R("09:00","Pont Benten, Enoshima-jinja, Escar","Escalators extérieurs, 3 sections.","vi",500,500),
+R("09:45","Sea Candle et grottes d'Iwaya","Sinon l'Enopass, environ 1 100 ¥ (Escar + Sea Candle + Iwaya + jardin).","vi",1300,1300),
+R("10:50","Déjeuner avec vue : Fujimi-tei","Vue sur le Fuji. Surligné en jaune sur ta liste.","re",1800,1800,{est:1}),
+R("11:50","Enoden Enoshima → Kamakurakōkōmae","Passage à niveau face à la mer (Slam Dunk). Ne pas bloquer la route pour les photos.","vi"),
+R("12:30","Enoden → Hase, puis Hase-dera","Le Kannon et la vue sur la baie.","vi",400,400),
+R("13:30","Kōtoku-in, le Grand Bouddha","Entrer dans la statue coûte 50 ¥ de plus.","vi",300,300),
+R("14:00","Sentier du Daibutsu → Zeniarai Benten","Laver ses pièces. Ferme à 16h30.","vi",100,100),
+R("14:45","Genjiyama et Kuzuharaoka-jinja","Puis la descente vers Kita-Kamakura (environ 45 min de sentier en tout).","vi"),
+R("15:25","Jōchi-ji","","vi",200,200),
+R("15:45","Engaku-ji","Grand temple zen, tombe d'Ozu. Ferme à 16h30.","vi",500,500),
+R("16:30","Marge","","bu"),
+R("16:40","JR Kita-Kamakura → Kamakura, Tsurugaoka Hachimangū","Gratuit, ouvert jusqu'à 20h. Puis la rue Komachi (snacks).","vi",700,700),
+R("18:00","JR Yokosuka Kamakura → Tokyo, puis Hibiya → Minami-Senju","Environ 1h20. Dîner sur la route.","tr",1300,1300),
+R("19:30","Dîner","","re",1500,1500)]},
+{d:"2027-04-09",c:"Tokyo",col:"var(--tk)",ti:"Musée Ghibli, Inokashira, Akihabara",s:"Hotel Palace Japan. Le soir, préparer un sac à dos pour deux nuits.",pb:"L'heure d'entrée au Ghibli est stricte : arriver à Mitaka 30 min avant. Si l'énergie le permet, option Odaiba de nuit : à 20h, Yurikamome depuis Shimbashi, Gundam éclairé et Rainbow Bridge, retour vers 22h30.",bk:["Musée Ghibli : ventes le 10/03/2027 à 10:00 JST","Takkyūbin : envoi des valises vers Kyoto (livraison le 11, au soir)"],st:[
+R("08:00","Envoyer les grosses valises à Kyoto","Yamato, à la réception ou au konbini. Livraison le 11/04 entre 18h et 20h chez Ikoi-no-Ie (accord à demander par e-mail).","lo",2500,2500,{est:1}),
+R("08:45","Hibiya → Akihabara, puis JR Sōbu → Mitaka","Environ 1h05.","tr",500,500),
+R("09:45","Bus de Mitaka vers le musée","Ou 15 min à pied le long de la rivière.","tr",230,230),
+R("10:00","Musée Ghibli","Entrée sur créneau. 1 000 ¥ adulte, 700 ¥ pour 13–18 ans.","pa",1000,700),
+R("12:00","Parc Inokashira","Barque cygne : 700 ¥ les 30 min, environ, pour deux.","vi",350,350),
+R("13:00","Déjeuner à Kichijōji","Harmonica Yokochō, menchi-katsu.","re",1300,1300),
+R("14:00","JR Chūō/Sōbu → Akihabara","Environ 40 min.","tr",400,400),
+R("14:45","Akihabara","Radio Kaikan (figurines), Gachapon Kaikan, Super Potato (rétro). Budget figurines à part.","vi",500,500),
+R("17:10","2k540 Aki-Oka Artisan","Artisanat et cafés sous les voies. Fermé le mercredi ; ferme vers 19h.","vi"),
+R("18:15","JR Okachimachi → Tokyo","","tr",170,170),
+R("18:30","Tokyo Station, Character Street","Ferme vers 20h30. Façade de Marunouchi illuminée.","vi"),
+R("19:30","Tokyo Ramen Street, dîner","","re",1300,1300),
+R("20:15","Retour","","tr",210,210)]},
+{d:"2027-04-10",c:"Fuji · Hakone",col:"var(--fj)",ti:"Lac Kawaguchi et Chūreitō, puis onsen à Hakone",s:"Hidamari Ichinoyu, Tōnosawa (Hakone). Check-in dès 15h, pas d'ascenseur. Dîner au ryokan selon le plan réservé.",pb:"Samedi, l'autoroute peut ajouter 30–60 min au bus. Dans ce cas, supprimer le parc Oishi. Si le bus Kawaguchiko → Gotemba est manqué : prendre le Fujikyū vers Ōtsuki, puis le JR vers Odawara et le Tozan vers Tōnosawa (environ 2h30). Nuages sur le Fuji : la pagode reste belle avec les sakura.",bk:["Bus Busta Shinjuku → Kawaguchiko : ventes 1 mois avant (10/03)","Bus express Kawaguchiko → Gotemba (conseillé)","Hakone Freepass numérique 2 jours (app EMot)"],st:[
+R("06:30","Check-out, JR → Shinjuku","Sac à dos seulement : les valises sont déjà parties.","tr",260,260),
+R("07:45","Bus Busta Shinjuku → Kawaguchiko","Environ 1h45. Réservation obligatoire.","tr",2200,2200),
+R("09:30","Marge autoroute","","bu"),
+R("10:00","Fujikyū → Shimoyoshida, puis pagode Chūreitō","398 marches, sakura en pleine saison. Gratuit.","vi",310,310),
+R("11:40","Retour à Kawaguchiko, déjeuner de hōtō","Nouilles épaisses, plat local.","re",1500,1500),
+R("13:00","Bus touristique, ligne rouge : rive nord et parc Oishi","Le lac et le Fuji. Pass 1 jour.","tr",1500,1500),
+R("15:10","Bus Kawaguchiko → Gotemba","70–105 min.","tr",1810,1810),
+R("16:45","Marge correspondance","","bu"),
+R("17:00","Hakone Tozan Bus Gotemba → Hakone-Yumoto","Via Sengoku. Prix non trouvé ; peut-être couvert par le Freepass.","tr",1500,1500,{est:1}),
+R("18:15","Navette ou taxi jusqu'au ryokan, à 3 min","","tr",400,400),
+R("18:30","Check-in, onsen, dîner kaiseki","Si le dîner n'est pas inclus : resto à Yumoto, environ 2 500 ¥.","re",0,0)]},
+{d:"2027-04-11",c:"Hakone → Kyoto",col:"var(--fj)",ti:"La boucle de Hakone, puis le Shinkansen",s:"Ikoi-no-Ie Guesthouse, Kyoto (métro Gojō). Check-in 16h–20h : annoncer l'arrivée vers 19h15.",pb:"Dimanche : 30 min de file pour la photo du torii du lac. Si le téléphérique est fermé (gaz volcaniques ou vent), bus de remplacement inclus dans le Freepass. Prévoir le Hikari suivant (environ 1 h plus tard) et prévenir la guesthouse si l'arrivée dépasse 20h.",bk:["Shinkansen Hikari Odawara → Kyoto (Smart EX, 1 mois avant)"],st:[
+R("07:00","Onsen du matin, petit-déjeuner","","re"),
+R("09:30","Check-out, 8 min à pied vers la gare de Tōnosawa","","lo"),
+R("09:45","Tozan Railway → Gōra","Train à zigzags.","tr"),
+R("10:35","Funiculaire → Sōunzan, puis téléphérique → Ōwakudani","Fumerolles, œufs noirs (500 ¥ les 5).","vi",500,500),
+R("11:55","Téléphérique → Tōgendai, déjeuner","","re",1300,1300),
+R("13:00","Bateau pirate sur le lac Ashi → Moto-Hakone","Vue sur le Fuji.","vi"),
+R("13:45","Hakone-jinja et torii dans le lac","","vi"),
+R("14:40","Bus → Hakone-Yumoto","","tr"),
+R("15:20","Rue de Yumoto","Boutique Evangelion (repère de ta liste, à vérifier).","vi"),
+R("16:05","Tozan → Odawara","Toute la boucle est couverte par le Freepass 2 jours (6 000 ¥ au départ d'Odawara).","tr",6000,6000),
+R("16:30","Marge","","bu"),
+R("16:50","Shinkansen Hikari Odawara → Kyoto","Environ 1h55, place réservée.","tr",12100,12100),
+R("18:45","Gare de Kyoto → Gojō","15 min à pied ou 1 station de métro.","tr",220,220),
+R("19:15","Check-in, valises arrivées, dîner rapide","Taxe de séjour de Kyoto : environ 200 ¥ par personne et par nuit.","re",2000,2000)]},
+{d:"2027-04-12",c:"Kyoto",col:"var(--ky)",ti:"Fushimi Inari, Kiyomizu, Gion",s:"Ikoi-no-Ie Guesthouse.",pb:"Monter tout le Fushimi Inari prend 2h30 : s'arrêter au point de vue de Yotsutsuji. Pluie : Nishiki et les galeries couvertes de Teramachi en premier. Sur l'allée Hanamikoji, ne pas photographier les geiko de près : amendes dans les ruelles privées.",st:[
+R("06:40","JR Kyoto → Inari","5 min.","tr",150,150),
+R("07:00","Fushimi Inari-taisha","Les torii sans foule. Gratuit.","vi"),
+R("09:30","Marge","","bu"),
+R("09:45","Keihan Fushimi-Inari → Kiyomizu-gojō, puis montée","","tr",220,220),
+R("10:30","Kiyomizu-dera","Incontournable.","vi",500,500),
+R("11:45","Kiyomizu-zaka, Sannenzaka, Ninenzaka, déjeuner","Pagode Yasaka (Hōkan-ji).","re",1600,1600),
+R("13:30","Yasaka-jinja et parc Maruyama","","vi"),
+R("14:15","Gion : Hanamikoji et Shirakawa","","vi"),
+R("15:30","Marché Nishiki","Street food. Ferme vers 17–18h.","re",1500,1500),
+R("16:45","Pause à la guesthouse","Métro Shijō → Gojō.","tr",220,220),
+R("18:30","Pontochō, dîner, puis les berges de la Kamo","Petites ruelles éclairées.","re",2500,2500,{est:1}),
+R("20:30","Retour à pied, environ 20 min","","tr")]},
+{d:"2027-04-13",c:"Kyoto",col:"var(--ky)",ti:"Arashiyama, Kinkaku-ji, Tō-ji, Kyoto Tower",s:"Ikoi-no-Ie Guesthouse.",pb:"Les bus de Kyoto sont saturés : prendre un taxi Ryōan-ji → Tō-ji (environ 2 500 ¥ pour deux). Option Saihō-ji, le temple des mousses (4 000 ¥ par personne, réservation 2 mois avant) : il remplace alors Kinkaku et Ryōan-ji.",st:[
+R("07:00","Métro Gojō → Kyoto, puis JR Sagano → Saga-Arashiyama","","tr",460,460),
+R("07:45","Bambouseraie d'Arashiyama","Vide avant 8h30.","vi"),
+R("08:30","Jardin du Tenryū-ji","","vi",500,500),
+R("09:15","Pont Togetsukyō","","vi"),
+R("09:50","Monkey Park Iwatayama","20 min de montée. Tarif ado incertain.","vi",800,800),
+R("11:00","Déjeuner à Arashiyama","","re",1500,1500),
+R("12:10","Randen → Kitano-Hakubaichō, puis bus → Kinkaku-ji","","tr",480,480),
+R("13:00","Kinkaku-ji","Le Pavillon d'or.","vi",500,500),
+R("13:50","Ryōan-ji","20 min à pied. Le jardin de pierres.","vi",600,600),
+R("15:00","Taxi ou bus → Tō-ji","","tr",700,700),
+R("15:50","Tō-ji","Ferme vers 17h. La pagode n'ouvre qu'en période spéciale.","vi",500,500,{est:1}),
+R("17:00","Marge","","bu"),
+R("17:45","Kyoto Tower","Coucher de soleil vers 18h25. Ta sœur paie 700 ¥.","pa",900,700),
+R("19:00","Dîner à la gare, Kyoto Ramen Kōji","","re",1300,1300)]},
+{d:"2027-04-14",c:"Kyoto",col:"var(--ky)",ti:"Ginkaku-ji, chemin des Philosophes, palais impérial",s:"Ikoi-no-Ie Guesthouse. Le soir : faire les valises pour Nara et Osaka.",pb:"En avril, le musée national présente une exposition spéciale (prix et thème de 2027 inconnus). Si elle n'emballe pas, garder le Sanjūsangen-dō et rentrer plus tôt. Le palais impérial est ouvert le mercredi, fermé le lundi.",bk:["Consigne réservée à Nara (ecbo cloak), environ 1 mois avant"],st:[
+R("08:00","Bus → Ginkaku-ji","Environ 35 min.","tr",230,230),
+R("08:30","Ginkaku-ji","Tarif relevé en 2026.","vi",1000,1000),
+R("09:30","Chemin des Philosophes → Nanzen-ji","Aqueduc en brique du Suirokaku.","vi"),
+R("11:15","Métro Keage → Imadegawa, déjeuner","","re",1300,1300),
+R("12:50","Palais impérial de Kyoto, Gosho","Gratuit, entrée par la porte Seishomon.","vi"),
+R("14:10","Bus → Sanjūsangen-dō","","tr",230,230),
+R("14:50","Sanjūsangen-dō","1 001 statues de Kannon.","vi",600,400),
+R("15:30","Musée national de Kyoto","Gratuit pour les moins de 18 ans hors expositions spéciales. Prix de l'exposition 2027 inconnu.","vi",1800,0,{est:1}),
+R("17:00","Retour, linge, valises","","lo"),
+R("18:30","Dîner du quartier","Okonomiyaki ou soba.","re",1500,1500)]},
+{d:"2027-04-15",c:"Nara → Osaka",col:"var(--os)",ti:"Nara en chemin, Shinsekai et Dōtonbori le soir",s:"OASIS NANIWA, Kishinosato (Nishinari). Check-in dès 16h avec un code, pas de personnel.",pb:"Les consignes de Kintetsu Nara sont pleines vers 10h : arriver avant 9h15, ou réserver une consigne ecbo cloak. Si la journée traîne, garder Shinsekai pour le samedi matin et faire Dōtonbori seul.",bk:["Takkyūbin Osaka → Narita Tobu Hotel (au konbini)"],st:[
+R("07:30","Check-out, gare de Kyoto avec les valises","","lo"),
+R("08:05","Kintetsu, express Kyoto → Kintetsu-Nara","Environ 45 min.","tr",760,760),
+R("08:55","Consignes, 2 grandes","","lo",800,800),
+R("09:15","Kōfuku-ji","Pagode sous échafaudage jusqu'en 2031.","vi"),
+R("10:00","Parc de Nara et biches sacrées","Les biches saluent si on les salue. Shika senbei, environ 200 ¥.","vi",200,200),
+R("11:00","Tōdai-ji, le Grand Bouddha","","vi",800,800),
+R("12:00","Déjeuner","","re",1300,1300),
+R("13:15","Kasuga Taisha","Allée de lanternes. Sanctuaire principal.","vi",500,500),
+R("14:30","Naramachi","Anciennes maisons marchandes, cafés, mochi de Nakatanidō.","vi",500,500),
+R("16:15","Récupérer les valises, Kintetsu → Osaka-Namba","Express rapide direct, environ 40 min.","tr",680,680),
+R("17:15","Ligne Yotsubashi → Kishinosato, check-in","","tr",240,240),
+R("17:45","Envoyer les valises à Narita Tobu Hotel","Livraison le 17. Garder un sac pour deux nuits.","lo",2500,2500,{est:1}),
+R("18:15","Shinsekai et Tsūtenkaku","À 20 min à pied. Coucher de soleil depuis la tour.","pa",1500,1500),
+R("19:00","Dîner kushikatsu","Brochettes panées.","re",2000,2000),
+R("20:15","Métro → Namba, Dōtonbori","Glico, takoyaki. Durée notée : 1h30.","re",800,800),
+R("21:45","Retour à Kishinosato","","tr",240,240)]},
+{d:"2027-04-16",c:"Osaka",col:"var(--os)",ti:"Universal Studios Japan",s:"OASIS NANIWA.",pb:"Les créneaux de l'Express Pass sont imprimés : construire la journée autour d'eux. Si un créneau tombe pendant le déjeuner, manger avant 11h. En cas de pluie, beaucoup d'attractions restent ouvertes, et les files raccourcissent.",bk:["Studio Pass + Express Pass 4 : dès maintenant (le prix monte)"],st:[
+R("06:45","Hanshin Namba → Nishikujō, puis JR Yumesaki → Universal City","Environ 50 min.","tr",650,650),
+R("07:40","Devant les portes","Ouverture vers 8h30–9h. App USJ installée.","bu"),
+R("08:30","Studio Pass 1 jour","Ta sœur paie le tarif adulte (≥12 ans). Prix dynamique, estimation pour un vendredi d'avril.","pa",9800,9800,{est:1}),
+R("08:30","Express Pass 4","Mario Kart, Yoshi, Donkey Kong (entrée Super Nintendo World garantie) et Harry Potter. Environ 96–160 $.","pa",18000,18000,{est:1}),
+R("09:00","Super Nintendo World","Power-Up Band en option, environ 4 000 ¥.","vi"),
+R("11:00","Déjeuner (Kinopio's Café)","","re",2500,2500),
+R("12:00","Harry Potter, Flying Dinosaur, Hollywood Dream","","vi"),
+R("15:30","Goûter","","re",1200,1200),
+R("18:00","Dîner","Dans le parc ou au CityWalk.","re",2200,2200),
+R("20:30","Retour","","tr",650,650),
+R("21:45","Hôtel","","lo")]},
+{d:"2027-04-17",c:"Osaka → Narita",col:"var(--tr)",ti:"Château d'Osaka, Den Den Town, Shinkansen, Narita",s:"Narita Tobu Hotel Airport. Navette gratuite depuis l'arrêt 16 du T1.",pb:"Le Nozomi a un train toutes les 10 min : si vous ratez le vôtre, Smart EX permet de changer sans frais avant le départ. Bus TYO-NRT bouché : prendre le N'EX à Tokyo (3 140 ¥, environ 1 h).",bk:["Nozomi Shin-Osaka → Tokyo : Hayatoku 21 avant le 27/03 (12 980 ¥)"],st:[
+R("08:30","Check-out, métro → Tanimachi 4-chōme","","tr",290,290),
+R("09:15","Château d'Osaka et parc","Donjon. Une collégienne est gratuite avec justificatif ; une lycéenne paie le tarif adulte.","vi",1200,1200),
+R("11:30","Marché de Kuromon, déjeuner","Street food.","re",2000,2000),
+R("13:00","Den Den Town, Nipponbashi","Figurines et jeux rétro.","vi"),
+R("14:10","Midōsuji → Shin-Osaka","","tr",290,290),
+R("14:30","Marge, ekiben","Bento pour le train.","re",1300,1300),
+R("14:51","Nozomi Shin-Osaka → Tokyo","Environ 2h30. 12 980 ¥ en Hayatoku 21, sinon 14 720 ¥.","tr",12980,12980),
+R("17:40","Bus TYO-NRT Tokyo Yaesu → Narita T1","Environ 65 min.","tr",1500,1500),
+R("19:15","Navette → Narita Tobu Hotel, récupérer les valises","","lo"),
+R("19:45","Dîner, pesée des bagages","Franchise Swiss : 23 kg.","re",1800,1800)]},
+{d:"2027-04-18",c:"Retour",col:"var(--tr)",ti:"Narita → Zurich → Paris",s:"À la maison.",pb:"Navette pleine : prendre la suivante (environ 15 min) ou un taxi, environ 2 000 ¥. Arriver au T1 au moins 3 h avant le vol.",st:[
+R("06:30","Lever, petit-déjeuner","","re",1200,1200),
+R("07:30","Navette → T1","","tr"),
+R("07:45","Enregistrement Swiss","Les achats détaxés emballés sont contrôlés à la sortie.","lo"),
+R("08:45","Sécurité et immigration","","bu"),
+R("11:00","LX161 Narita → Zurich, puis LX646 → Paris","Heures de correspondance selon le billet.","tr"),
+R("soir","RER B CDG → Malakoff","","tr",0,0,{e:14})]}
+];
+const BK=[
+["2026-11-30","Dès maintenant","USJ : Studio Pass + Express Pass 4 pour le 16/04","Site officiel USJ. Le prix monte avec la demande et l'Express Pass s'épuise.",15],
+["2026-12-10","Décembre","Assurance voyage et AST de la mineure","Cerfa 15646, avec la copie de la pièce d'identité du parent signataire. Vérifier la validité des passeports.",0],
+["2026-12-15","Décembre","E-mails aux hébergements","Ryokan : dîner inclus ? Arrivée vers 18h30. Ikoi-no-Ie : arrivée 19h15 et colis le 11. Narita Tobu : colis le 17.",0],
+["2027-02-07","07/02 · 14:00 JST","DisneySea, 1-Day Passport pour le 07/04","Soit 06:00 à Paris. 2 mois avant, jour pour jour.",6],
+["2027-02-13","13/02","Option : Saihō-ji (temple des mousses) pour le 13/04","intosaihoji.com, 4 000 ¥ par personne.",12],
+["2027-03-01","Début mars","Commander la SIM physique 4G (data, 16 jours)","Sakura Mobile, retrait à Narita T1 le 03/04. Choisir le format nano-SIM, au moins 3 Go par jour ou illimité. Le Redmi Note 13 Pro 4G doit être désimlocké (réglages → À propos → Statut de la SIM) et capter la bande LTE 1, 3, 19 ou 28, utilisées par les réseaux japonais. Prévoir l'outil d'éjection du tiroir SIM.",1],
+["2027-03-03","≈ 03/03","Tokyo Skytree, créneau 17:30 le 03/04","Environ 1 mois avant (non confirmé).",1],
+["2027-03-08","08/03 · 00:00 JST","Shibuya Sky, créneau 17:20 le 05/04","Soit le 07/03 à 16:00 à Paris. 4 semaines avant.",3],
+["2027-03-10","10/03 · 10:00 JST","Musée Ghibli, 10:00 le 09/04","Soit 02:00 à Paris. Lawson Ticket, les places partent en quelques heures.",7],
+["2027-03-10","10/03","Bus Busta Shinjuku → Kawaguchiko, 07:45 le 10/04","highway-buses.jp (Keiō) ou Fujiyama Connect. Plus l'express Kawaguchiko → Gotemba.",8],
+["2027-03-11","11/03","Shinkansen Hikari Odawara → Kyoto, le 11/04","Smart EX, 1 mois avant.",9],
+["2027-03-17","17–27/03","Nozomi Shin-Osaka → Tokyo, le 17/04","Hayatoku 21 : à acheter au plus tard le 27/03.",15],
+["2027-03-15","Mi-mars","Consigne ecbo cloak à Nara pour le 15/04","Évite les consignes pleines.",13],
+["2027-03-27","≈ 27/03","Visit Japan Web","Immigration et douane, QR codes à faire pour les deux.",1],
+["2027-04-01","Fin mars","Hakone Freepass numérique 2 jours (10–11/04)","App EMot, Odakyu.",8]
+];
+const CHK=["Passeports valides (au moins la durée du séjour)","AST + copie de la pièce d'identité du parent","Assurance voyage (frais médicaux élevés au Japon)","Visit Japan Web rempli","Carte bancaire sans frais à l'étranger + 30 000 ¥ d'avance","SIM physique 4G commandée + outil d'éjection du tiroir SIM",
+"Adaptateur prise type A (fiche plate)","Batterie externe (en cabine uniquement)","Billets imprimés + captures hors ligne","Google Maps : télécharger les cartes hors ligne","Petit sac poubelle (il n'y a pas de poubelles dans les rues)"];
+const KC={tr:["Transport","var(--ai)"],vi:["Visites","var(--fj)"],pa:["Parcs et billets","var(--os)"],re:["Repas","var(--saku2)"],lo:["Logistique","var(--tor)"],bu:["Marge","var(--tr)"]};
+const $=id=>document.getElementById(id);
+const fmtY=n=>n.toLocaleString("fr-FR")+" ¥";
+let rate=172;try{const v=+localStorage.getItem("jp-rate");if(v>=100&&v<=250)rate=v}catch(e){}
+$("rate").value=rate;
+const fmtE=y=>Math.round(y/rate).toLocaleString("fr-FR")+" €";
+const fmtD=s=>{const d=new Date(s+"T12:00:00");return d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})};
+const yen=s=>s.a+s.b, eur=s=>(s.e||0)*2;
+let cur=1;
+const totalNights=SEG.reduce((a,s)=>a+s[2],0);
+$("segs").style.gridTemplateColumns=SEG.map(s=>s[2]+"fr").join(" ");
+$("segs").innerHTML=SEG.map(s=>`<div class="seg" style="background:${s[3]}"><span class="n">${s[0]}</span><span class="s">${s[4]}</span><span class="s">${s[5]}</span></div>`).join("");
+$("ticks").innerHTML=D.map((d,i)=>{const dt=new Date(d.d+"T12:00:00");return `<button class="tick" type="button" data-i="${i}" aria-pressed="false" title="${fmtD(d.d)}">${dt.getDate()}<small>${dt.toLocaleDateString("fr-FR",{weekday:"short"}).replace(".","")}</small></button>`}).join("");
+document.querySelectorAll(".tick").forEach(b=>b.addEventListener("click",()=>show(+b.dataset.i,true)));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function show(i,scroll){
+ cur=Math.max(0,Math.min(D.length-1,i));const d=D[cur];
+ document.querySelectorAll(".tick").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===cur));
+ $("dTitle").textContent=d.ti;$("dCity").textContent=d.c;$("dCity").style.background=d.col;
+ $("dDate").textContent=fmtD(d.d)+" · Jour "+(cur+1)+" / "+D.length;
+ $("tt").innerHTML=d.st.map(s=>{const c=s.a||s.b?`${fmtY(s.a)}${s.b!==s.a?" / "+fmtY(s.b):""}${s.est?" est.":""}`:(s.e?s.e+" €":"");return `<li class="${s.k==="bu"?"buf":""}"><span class="t">${esc(s.t)}</span><span class="dot" style="background:${KC[s.k][1]}"></span><span class="w"><b>${esc(s.ti)}</b>${s.de?`<p>${esc(s.de)}</p>`:""}</span><span class="c">${c}</span></li>`}).join("");
+ const a=d.st.reduce((x,s)=>x+s.a,0),b=d.st.reduce((x,s)=>x+s.b,0),e=d.st.reduce((x,s)=>x+(s.e||0),0)*2;
+ $("dSum").innerHTML=`<span>Adulte</span><span class="num">${fmtY(a)}</span><span>Ado</span><span class="num">${fmtY(b)}</span><span class="tot">Duo</span><span class="num tot">${fmtY(a+b)} · ${Math.round((a+b)/rate+e).toLocaleString("fr-FR")} €</span>`;
+ $("dSleep").textContent=d.s;$("dPlanB").textContent=d.pb;
+ $("dBookBox").hidden=!d.bk;$("dBook").innerHTML=(d.bk||[]).map(x=>`<li>${esc(x)}</li>`).join("");
+ if(history.replaceState)history.replaceState(null,"","#j"+(cur+1));
+ if(scroll)$("jour").scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("prev").onclick=()=>show(cur-1);$("next").onclick=()=>show(cur+1);
+function budget(){
+ const cat={};let A=0,B=0,E=0;
+ D.forEach(d=>d.st.forEach(s=>{const k=s.k2||s.k;cat[k]=cat[k]||{a:0,b:0};cat[k].a+=s.a;cat[k].b+=s.b;A+=s.a;B+=s.b;E+=(s.e||0)*2}));
+ const ks=Object.keys(cat).filter(k=>cat[k].a+cat[k].b>0).sort((x,y)=>(cat[y].a+cat[y].b)-(cat[x].a+cat[x].b));
+ const mx=Math.max(...ks.map(k=>cat[k].a+cat[k].b));
+ $("bars").innerHTML=ks.map(k=>{const v=cat[k].a+cat[k].b;return `<div class="r"><span>${KC[k][0]}</span><span class="b" style="width:${(v/mx*100).toFixed(1)}%;background:${KC[k][1]}"></span><span class="num">${fmtE(v)}</span></div>`}).join("");
+ const tot=Math.round((A+B)/rate+E);
+ $("budT").innerHTML=`<thead><tr><th>Poste</th><th class="num">Adulte</th><th class="num">Ado</th><th class="num">Duo</th></tr></thead><tbody>${ks.map(k=>`<tr><td>${KC[k][0]}</td><td class="num">${fmtY(cat[k].a)}</td><td class="num">${fmtY(cat[k].b)}</td><td class="num">${fmtE(cat[k].a+cat[k].b)}</td></tr>`).join("")}<tr><td>RER Paris (A/R)</td><td class="num">28 €</td><td class="num">28 €</td><td class="num">${E} €</td></tr><tr><td><b>Total sur place</b></td><td class="num"><b>${fmtE(A)}</b></td><td class="num"><b>${fmtE(B)}</b></td><td class="num"><b>${tot.toLocaleString("fr-FR")} €</b></td></tr><tr><td>Hôtels réservés</td><td></td><td></td><td class="num">1 003 €</td></tr><tr><td><b>Voyage hors vols et shopping</b></td><td></td><td></td><td class="num"><b>${(tot+1003).toLocaleString("fr-FR")} €</b></td></tr></tbody>`;
+ $("kTot").textContent=tot.toLocaleString("fr-FR")+" €";
+ $("budTitle").textContent=`Budget sur place : environ ${tot.toLocaleString("fr-FR")} € pour deux, ${(tot+1003).toLocaleString("fr-FR")} € avec les hôtels`;
+}
+$("rate").addEventListener("input",e=>{const v=+e.target.value;if(v>=100&&v<=250){rate=v;try{localStorage.setItem("jp-rate",v)}catch(x){}budget();show(cur)}});
+let done={};try{done=JSON.parse(localStorage.getItem("jp-done")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("jp-done",JSON.stringify(done))}catch(e){}};
+const today=new Date();today.setHours(0,0,0,0);
+const bkS=BK.slice().sort((x,y)=>x[0].localeCompare(y[0]));
+function renderBk(){
+ $("bk").innerHTML=bkS.map((b,i)=>{const id="b"+i,dd=Math.round((new Date(b[0]+"T00:00:00")-today)/864e5),isD=done[b[2]];
+  const when=dd<=0?"maintenant":"dans "+dd+" j";
+  return `<li class="${isD?"done":""}"><input type="checkbox" id="${id}" data-k="${esc(b[2])}" ${isD?"checked":""}><label class="when" for="${id}">${esc(b[1])}<small class="${dd<=30?"soon":""}">${when}</small></label><span class="what"><b>${esc(b[2])}</b><br><span class="note">${esc(b[3])}</span></span></li>`}).join("");
+ $("chk").innerHTML=CHK.map((c,i)=>`<li class="${done["c"+i]?"done":""}"><input type="checkbox" id="c${i}" data-k="c${i}" ${done["c"+i]?"checked":""}><label class="what" for="c${i}">${esc(c)}</label></li>`).join("");
+ document.querySelectorAll(".bk input").forEach(x=>x.addEventListener("change",()=>{done[x.dataset.k]=x.checked;save();renderBk()}));
+ const nx=bkS.find(b=>!done[b[2]]);$("kNext").textContent=nx?(new Date(nx[0]+"T00:00:00")<=today?"Maintenant":new Date(nx[0]+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})):"Tout est fait";
+}
+budget();renderBk();
+const h=(location.hash.match(/^#j(\d+)$/)||[])[1];show(h?+h-1:1);
+}
+</script>
