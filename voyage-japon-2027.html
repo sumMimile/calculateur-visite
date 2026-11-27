@@ -34,7 +34,7 @@ h3{font-size:18px;margin:0 0 6px}
 .seg{border-radius:6px;padding:8px 8px 6px;color:#fff;position:relative;min-height:66px}
 .seg .n{font-weight:900;font-size:15px;line-height:1.1;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seg .s{font-size:12px;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-.ticks{display:grid;grid-template-columns:repeat(17,minmax(0,1fr));gap:3px;margin-top:8px}
+.ticks{display:grid;grid-template-columns:repeat(19,minmax(0,1fr));gap:3px;margin-top:8px}
 .tick{border:2px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:999px;height:44px;font:700 13px/1 inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
 .tick small{font-size:10px;font-weight:500;color:var(--mute)}
 .tick:hover{background:var(--card)}
@@ -546,8 +546,13 @@ section[id]{scroll-margin-top:64px}
 <script>
 {
 const R=(t,ti,de,k,a,b,o)=>Object.assign({t,ti,de,k,a:a||0,b:b===undefined?(a||0):b},o||{});
-const SEG=[["Vol",0,1,"var(--tr)","2 avril","CDG → ZRH → NRT"],["Tokyo",1,7,"var(--tk)","3–9 avril","Hotel Palace Japan"],["Fuji · Hakone",8,2,"var(--fj)","10–11","Hidamari Ichinoyu"],["Kyoto",10,3,"var(--ky)","12–14","Ikoi-no-Ie"],["Nara · Osaka",14,3,"var(--os)","15–17","OASIS NANIWA, puis Narita"],["Retour",16,1,"var(--tr)","18 avril","NRT → ZRH → CDG"]];
+const SEG=[["Départ",0,2,"var(--tr)","1–2 avril","Malakoff → CDG → NRT"],["Tokyo",1,7,"var(--tk)","3–9 avril","Hotel Palace Japan"],["Fuji · Hakone",8,2,"var(--fj)","10–11","Hidamari Ichinoyu"],["Kyoto",10,3,"var(--ky)","12–14","Ikoi-no-Ie"],["Nara · Osaka",14,3,"var(--os)","15–17","OASIS NANIWA, puis Narita"],["Retour",17,2,"var(--tr)","18–19 avril","NRT → CDG → Malakoff"]];
 const D=[
+{d:"2027-04-01",c:"Veille du départ",col:"var(--tr)",ti:"Ta sœur arrive à Paris, sacs bouclés",s:"Malakoff.",pb:"En cas de retard ou d'annulation du train, les trains Clermont-Ferrand → Paris sont réguliers dans la journée : prévoir une arrivée au plus tard en début de soirée. Si un train de nuit ou très tardif est le seul possible, le départ du lendemain à 06:15 reste tenable mais la nuit sera courte.",bk:["Billet Intercités Clermont-Ferrand → Paris-Bercy (ta sœur) : horaire et prix à compléter"],st:[
+R("—","Train Clermont-Ferrand → Paris-Bercy (ta sœur)","Intercités, environ 3h30. Horaire à compléter. Mineure voyageant seule : billet à son nom, pièce d'identité sur elle.","tr",0,0,{e1:35,est:1}),
+R("—","Paris-Bercy → Malakoff","Métro (ligne 14 puis 13, ou RER) : environ 40 min.","tr",0,0,{e1:2.5}),
+R("19:00","Dernière vérification des bagages","Passeports, AST + copie de la pièce d'identité du parent, QR Visit Japan Web, cartes bancaires, chargeurs. Pesée : 23 kg max par valise.","lo"),
+R("20:00","Dîner, réveil réglé à 05:30","","re",0,0,{e1:20,est:1})]},
 {d:"2027-04-02",c:"Paris → vol",col:"var(--tr)",ti:"Départ : Malakoff → Zurich → Narita",s:"Dans l'avion (LX160).",pb:"Si LX633 est en retard et que la correspondance à Zurich saute, Swiss replace sur le vol suivant (billet unique) : garder les cartes d'embarquement. Une nuit en avion n'a aucun impact sur les hôtels.",st:[
 R("06:15","Quitter Malakoff","RER B jusqu'à CDG, environ 1h15 (ticket aéroport). Taxi si grève ou retard.","tr",0,0,{e:14}),
 R("07:30","Swiss, CDG terminal 1","Dépose des bagages (2 × 23 kg par personne en soute, 8 kg en cabine). Passeports, AST de la mineure avec la copie de la pièce d'identité du parent signataire, QR Visit Japan Web.","lo"),
@@ -776,12 +781,17 @@ R("08:45","Sécurité et immigration","","bu"),
 R("11:00","LX161 Narita → Zurich","Arrivée 18:25.","tr"),
 R("18:25","Correspondance à Zurich, dîner","3h40 sur place.","re",0,0,{e:25}),
 R("22:05","LX646 Zurich → Paris","Arrivée 23:30 à CDG.","tr"),
-R("23:30","CDG → Malakoff","Le dernier RER B part vers minuit : prévoir un taxi si les bagages traînent (environ 70 €, estimation).","tr",0,0,{e:35})]}
+R("23:30","CDG → Malakoff","Le dernier RER B part vers minuit : prévoir un taxi si les bagages traînent (environ 70 €, estimation).","tr",0,0,{e:35})]},
+{d:"2027-04-19",c:"Retour",col:"var(--tr)",ti:"Retour à Malakoff, puis le train de ta sœur",s:"À la maison.",pb:"Si LX646 arrive en retard, le taxi depuis CDG reste la solution la plus simple après minuit. Le train de ta sœur peut être pris dans l'après-midi pour laisser le temps de récupérer.",bk:["Billet Intercités Paris-Bercy → Moulins-sur-Allier (ta sœur) : horaire et prix à compléter"],st:[
+R("00:45","Arrivée à Malakoff","Après le taxi ou le dernier RER B depuis CDG.","lo"),
+R("—","Malakoff → Paris-Bercy","Métro (ligne 13 puis 14, ou RER) : environ 40 min.","tr",0,0,{e1:2.5}),
+R("—","Train Paris-Bercy → Moulins-sur-Allier (ta sœur)","Intercités, environ 2h30. Horaire à compléter.","tr",0,0,{e1:25,est:1})]}
 ];
 const BK=[
 ["2026-12-10","10/12/2026","Enregistrement OASIS NANIWA (obligatoire)","Par le lien reçu dans la messagerie de la plateforme : vos deux identités et vos deux pages de passeport. C'est une obligation légale au Japon, à ne faire que par ce canal.",13],
 ["2026-12-10","10/12/2026","Messages aux hébergements","Hidamari Ichinoyu : arrivée vers 16h30 (check-in jusqu'à 18h), heure du dîner, onsen privatif. Ikoi-no-Ie : arrivée 19h15 et colis Yamato le 11. Narita Tobu : colis le 17.",8],
 ["2026-12-15","15/12/2026","AST de la mineure et validité des passeports","Cerfa 15646 avec la copie de la pièce d'identité du parent signataire. Les passeports doivent être valides pendant tout le séjour.",0],
+["2027-02-15","15/02/2027","Billets de train de ta sœur","Clermont-Ferrand → Paris-Bercy le 01/04 et Paris-Bercy → Moulins le 19/04 (Intercités, sncf-connect.com ; tarifs plus bas en réservant tôt, carte Avantage Jeune possible).",0],
 ["2026-12-31","31/12/2026","Assurance voyage","Vérifier ce que couvre la carte bancaire (frais médicaux, rapatriement), sinon souscrire une assurance.",0],
 ["2027-01-15","15/01/2027","Vérifier le téléphone pour la SIM","Redmi Note 13 Pro 4G : désimlocké et compatible avec la bande LTE 1, 3, 19 ou 28.",1],
 ["2027-02-07","07/02 · 06:00 Paris","DisneySea, 1-Day Passport pour le 07/04","Ventes à 14:00 JST, 2 mois avant jour pour jour.",5],
@@ -820,7 +830,7 @@ function show(i,scroll){
  document.querySelectorAll(".tick").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===cur));
  $("dTitle").textContent=d.ti;$("dCity").textContent=d.c;$("dCity").style.background=d.col;
  $("dDate").textContent=fmtD(d.d)+" · Jour "+(cur+1)+" / "+D.length;
- $("tt").innerHTML=d.st.map(s=>{const c=s.a||s.b?`${fmtY(s.a)}${s.b!==s.a?" / "+fmtY(s.b):""}${s.est?" est.":""}`:(s.e?s.e+" €":"");return `<li class="${s.k==="bu"?"buf":""}"><span class="t">${esc(s.t)}</span><span class="dot" style="background:${KC[s.k][1]}"></span><span class="w"><b>${esc(s.ti)}</b>${s.de?`<p>${esc(s.de)}</p>`:""}</span><span class="c">${c}</span></li>`}).join("");
+ $("tt").innerHTML=d.st.map(s=>{const c=s.a||s.b?`${fmtY(s.a)}${s.b!==s.a?" / "+fmtY(s.b):""}${s.est?" est.":""}`:(s.e1?String(s.e1).replace(".",",")+" €":s.e?s.e+" €":"");return `<li class="${s.k==="bu"?"buf":""}"><span class="t">${esc(s.t)}</span><span class="dot" style="background:${KC[s.k][1]}"></span><span class="w"><b>${esc(s.ti)}</b>${s.de?`<p>${esc(s.de)}</p>`:""}</span><span class="c">${c}</span></li>`}).join("");
  const a=d.st.reduce((x,s)=>x+s.a,0),b=d.st.reduce((x,s)=>x+s.b,0),e=d.st.reduce((x,s)=>x+(s.e||0),0)*2;
  $("dSum").innerHTML=`<span>Adulte</span><span class="num">${fmtY(a)}</span><span>Ado</span><span class="num">${fmtY(b)}</span><span class="tot">Duo</span><span class="num tot">${fmtY(a+b)} · ${Math.round((a+b)/rate+e).toLocaleString("fr-FR")} €</span>`;
  $("dSleep").textContent=d.s;$("dPlanB").textContent=d.pb;
@@ -833,7 +843,7 @@ function show(i,scroll){
 $("prev").onclick=()=>show(cur-1);$("next").onclick=()=>show(cur+1);
 window.__showDay=i=>{if(i!==cur)show(i,false)};window.__fmtD=fmtD;
 window.__trip={D,BK,CHK,KC,fmtD,cur:()=>cur,setRate:(v,silent)=>{rate=v;if(!silent)show(cur)}};
-const h=(location.hash.match(/^#j(\d+)$/)||[])[1];show(h?+h-1:1);
+const h=(location.hash.match(/^#j(\d+)$/)||[])[1];show(h?+h-1:2);
 }
 </script>
 <script>
@@ -889,6 +899,8 @@ function seedResa(){
   T("t-bus","Bus Busta Shinjuku → Kawaguchiko ×2","2027-04-10",4400,"JPY","2027-03-10","https://www.highway-buses.jp","Ventes 1 mois avant. Plus l'express Kawaguchiko → Gotemba (conseillé).",["Bus Busta Shinjuku → Kawaguchiko"],"Transports"),
   T("t-hikari","Shinkansen Hikari Odawara → Kyoto ×2","2027-04-11",24200,"JPY","2027-03-11","https://smart-ex.jp/en/","Smart EX, 1 mois avant.",["Shinkansen Hikari Odawara → Kyoto"],"Transports"),
   T("t-nozomi","Shinkansen Nozomi Shin-Osaka → Tokyo ×2","2027-04-17",25960,"JPY","2027-03-27","https://smart-ex.jp/en/product/hayatoku21/","Hayatoku 21 : 12 980 ¥ si achat au plus tard 21 jours avant.",["Nozomi Shin-Osaka → Tokyo"],"Transports"),
+  T("t-train1","Train Clermont-Ferrand → Paris-Bercy (ta sœur)","2027-04-01",35,"EUR","2027-02-15","https://www.sncf-connect.com","Intercités, environ 3h30. Prix estimé : à remplacer par le prix réel.",["Train Clermont-Ferrand → Paris-Bercy"],"Transports"),
+  T("t-train2","Train Paris-Bercy → Moulins (ta sœur)","2027-04-19",25,"EUR","2027-02-15","https://www.sncf-connect.com","Intercités, environ 2h30. Prix estimé : à remplacer par le prix réel.",["Train Paris-Bercy → Moulins"],"Transports"),
   T("t-freepass","Hakone Freepass numérique 2 jours ×2","2027-04-10",12000,"JPY","2027-03-28","https://www.odakyu.jp/english/","App EMot (Odakyu).",["Tozan → Odawara"],"Transports"),
  ];
 }
@@ -903,8 +915,10 @@ function seedTasks(){
 }
 const SEEDT=seedTasks();
 // ---------- plan effectif (journées) ----------
-const defSteps=i=>D[i].st.map((s,j)=>({id:"s"+j,t:s.t,ti:s.ti,de:s.de,k:s.k,a:s.a,b:s.b,est:!!s.est,e:s.e||0,st:"envisage"}));
-function eff(i){const p=S.plan["d"+i];return p&&Array.isArray(p.steps)?p.steps:defSteps(i)}
+const defSteps=i=>D[i].st.map((s,j)=>({id:"s"+j,t:s.t,ti:s.ti,de:s.de,k:s.k,a:s.a,b:s.b,est:!!s.est,e:s.e||0,e1:s.e1||0,st:"envisage"}));
+const pkey=i=>"d"+D[i].d;
+const legacyKey=i=>"d"+Math.round((new Date(D[i].d+"T12:00:00")-new Date("2027-04-02T12:00:00"))/864e5);
+function eff(i){const p=S.plan[pkey(i)]||S.plan[legacyKey(i)];return p&&Array.isArray(p.steps)?p.steps:defSteps(i)}
 window.__eff=eff;
 // ---------- prévisions automatiques ----------
 const CATMAP=(s)=>s.k==="tr"?(/RER|LX|vol/i.test(s.ti)&&s.e?"Transports":"Transports"):s.k==="re"?"Repas":s.k==="lo"?(/SIM|valises|Consignes/i.test(s.ti)?"Logistique":"Logistique"):s.k==="pa"?(/Disney|Studio|Express|Passport/i.test(s.ti)?"Parcs à thème":"Visites & billets"):"Visites & billets";
@@ -912,8 +926,8 @@ function covered(day,label){const date=D[day].d;return Object.values(S.resa).som
 function autoItems(){
  const out=[];const over=new Set(Object.values(S.expenses).map(e=>e.autoKey).filter(Boolean));
  D.forEach((d,i)=>eff(i).forEach(s=>{
-  const jpy=(+s.a||0)+(+s.b||0),e2=(+s.e||0)*2;if(!jpy&&!e2)return;
-  const key="p"+i+"-"+s.id;if(over.has(key)||s.st==="facultatif"&&false)return;
+  const jpy=(+s.a||0)+(+s.b||0),e2=(+s.e||0)*2+(+s.e1||0);if(!jpy&&!e2)return;
+  const key="p"+d.d+"-"+s.id;if(over.has(key)||s.st==="facultatif"&&false)return;
   if(covered(i,s.ti))return;
   out.push({id:key,auto:true,autoKey:key,label:s.ti,cat:CATMAP(s),amount:jpy?jpy:e2,cur:jpy?"JPY":"EUR",rate:rateNow(),date:d.d,payer:"Les deux",status:"envisage",method:"",fromSavings:true,price:s.est?"est":"plan",notes:"Prévision du planning ("+(s.est?"estimation":"tarif relevé le 26/11/2026")+"), pour 2 personnes.",opt:s.st==="facultatif",day:i});
  }));
@@ -1143,10 +1157,10 @@ function checks(i,st){
 }
 let editing=false;
 function dayHook(i){
- const st=eff(i);const edited=!!S.plan["d"+i];
+ const st=eff(i);const edited=!!(S.plan[pkey(i)]||S.plan[legacyKey(i)]);
  const KC=TP.KC;
  const html=st.map((s,j)=>{const m=toMin(s.t);const nx=st.slice(j+1).find(x=>toMin(x.t)!=null);const dur=m!=null&&nx?toMin(nx.t)-m:null;
-  const c=s.a||s.b?`${yen(+s.a||0)}${+s.b!==+s.a?" / "+yen(+s.b||0):""}${s.est?" est.":""}`:(s.e?s.e+" €":"");
+  const c=s.a||s.b?`${yen(+s.a||0)}${+s.b!==+s.a?" / "+yen(+s.b||0):""}${s.est?" est.":""}`:(s.e1?String(s.e1).replace(".",",")+" €":s.e?s.e+" €":"");
   const ph=s.k!=="tr"&&s.k!=="bu"?photo(s.ti):null;
   return `<li class="${s.k==="bu"?"buf":""} ${s.st==="facultatif"?"opt":s.st==="confirme"?"conf":""}"><span class="t">${esc(s.t)}${dur>0&&s.k!=="bu"?`<span class="dur">${fmtDur(dur)}</span>`:""}</span><span class="dot" style="background:${(KC[s.k]||KC.vi)[1]}"></span><span class="w">${fig(ph)}<b>${esc(s.ti)}</b>${s.de?`<p>${esc(s.de)}</p>`:""}</span><span class="c">${c}</span>${editing?`<span class="ctl"><select data-sst="${j}" aria-label="Statut">${opts([["envisage","Envisagé"],["confirme","Confirmé"],["facultatif","Facultatif"]],s.st||"envisage")}</select><button class="gbtn sm" type="button" data-up="${j}" aria-label="Monter">↑</button><button class="gbtn sm" type="button" data-dn="${j}" aria-label="Descendre">↓</button><button class="gbtn sm" type="button" data-ed="${j}">Modifier</button><button class="gbtn sm dan" type="button" data-rm="${j}">Supprimer</button></span>`:""}</li>`}).join("");
  $("tt").innerHTML=html;
@@ -1154,15 +1168,15 @@ function dayHook(i){
  bar.innerHTML=`<button class="gbtn sm" type="button" id="dEdT">${editing?"Terminer":"Modifier la journée"}</button>${editing?`<button class="gbtn sm" type="button" id="dAdd">+ Activité</button>`:""}${edited?`<button class="gbtn sm dan" type="button" id="dReset">Restaurer la version d'origine</button><span class="note">Journée modifiée par vous.</span>`:""}`;
  $("dEdT").onclick=()=>{editing=!editing;dayHook(i)};
  if($("dAdd"))$("dAdd").onclick=()=>stepForm(i,null);
- if($("dReset"))$("dReset").onclick=()=>confirmBox("Restaurer la version d'origine de cette journée ? Vos modifications de ce jour seront perdues.",()=>del("plan","d"+i));
- const save=L=>put("plan","d"+i,{steps:L,updated:new Date().toISOString()});
+ if($("dReset"))$("dReset").onclick=()=>confirmBox("Restaurer la version d'origine de cette journée ? Vos modifications de ce jour seront perdues.",()=>{del("plan",pkey(i));if(S.plan[legacyKey(i)])del("plan",legacyKey(i))});
+ const save=L=>put("plan",pkey(i),{steps:L,updated:new Date().toISOString()});
  $("tt").querySelectorAll("[data-sst]").forEach(x=>x.onchange=()=>{const L=eff(i).map(s=>({...s}));L[+x.dataset.sst].st=x.value;save(L)});
  $("tt").querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>{const j=+b.dataset.up;if(!j)return;const L=eff(i).map(s=>({...s}));[L[j-1],L[j]]=[L[j],L[j-1]];save(L)});
  $("tt").querySelectorAll("[data-dn]").forEach(b=>b.onclick=()=>{const j=+b.dataset.dn;const L=eff(i).map(s=>({...s}));if(j>=L.length-1)return;[L[j+1],L[j]]=[L[j],L[j+1]];save(L)});
  $("tt").querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>stepForm(i,+b.dataset.ed));
  $("tt").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{const j=+b.dataset.rm;confirmBox(`Supprimer « ${eff(i)[j].ti} » de cette journée ?`,()=>{const L=eff(i).map(s=>({...s}));L.splice(j,1);save(L)})});
  // coût du jour (plan effectif)
- const a=st.filter(s=>s.st!=="facultatif").reduce((x,s)=>x+(+s.a||0),0),b=st.filter(s=>s.st!=="facultatif").reduce((x,s)=>x+(+s.b||0),0),e=st.reduce((x,s)=>x+(+s.e||0),0)*2;
+ const a=st.filter(s=>s.st!=="facultatif").reduce((x,s)=>x+(+s.a||0),0),b=st.filter(s=>s.st!=="facultatif").reduce((x,s)=>x+(+s.b||0),0),e=st.reduce((x,s)=>x+(+s.e||0)*2+(+s.e1||0),0);
  $("dSum").innerHTML=`<span>Adulte</span><span class="num">${yen(a)}</span><span>Ado</span><span class="num">${yen(b)}</span><span class="tot">Duo</span><span class="num tot">${yen(a+b)} · ${eur((a+b)/rateNow()+e)}</span>`;
  // vigilance
  let box=$("dWarn");if(!box){box=document.createElement("div");box.className="box";box.id="dWarn";$("dSum").parentNode.after(box)}
@@ -1174,7 +1188,7 @@ function stepForm(i,j){
   const t=$("sT").value.trim(),ti=$("sI").value.trim();if(!ti){$("sErr").textContent="Titre obligatoire.";return false}
   const o={...s,t:t||"—",ti,de:$("sD").value.trim(),k:$("sK").value,a:+$("sA").value||0,b:+$("sB").value||0,st:$("sS").value,est:$("sE").checked};
   const L=eff(i).map(x=>({...x}));if(j==null){const m=toMin(o.t);let at=L.length;if(m!=null){const k=L.findIndex(x=>toMin(x.t)!=null&&toMin(x.t)>m);if(k>=0)at=k}L.splice(at,0,o)}else L[j]=o;
-  put("plan","d"+i,{steps:L,updated:new Date().toISOString()});
+  put("plan",pkey(i),{steps:L,updated:new Date().toISOString()});
  }}]);
 }
 window.__dayHook=i=>{if(ready||true)dayHook(i)};
@@ -1182,7 +1196,7 @@ window.__dayHook=i=>{if(ready||true)dayHook(i)};
 function jstNow(){const n=new Date(Date.now()+9*3600e3);return{date:n.toISOString().slice(0,10),min:n.getUTCHours()*60+n.getUTCMinutes()}}
 function hotelFor(date){return Object.values(S.resa).find(r=>r.type==="hôtel"&&r.start<=date&&r.end>date&&r.status!=="annule")}
 function openVoy(){
- const n=jstNow();let di=D.findIndex(d=>d.d===n.date);if(di<0)di=n.date<D[0].d?1:D.length-1;
+ const n=jstNow();let di=D.findIndex(d=>d.d===n.date);if(di<0)di=n.date<D[0].d?2:D.length-1;
  $("vDay").innerHTML=D.map((d,i)=>`<option value="${i}" ${i===di?"selected":""}>${esc(fmtD(d.d))}</option>`).join("");
  $("vCat").innerHTML=opts(["Repas","Transports","Visites & billets","Shopping","Logistique","Autre"],"Repas");$("vPay").innerHTML=opts([...travelers(),"Les deux"],"Les deux");
  $("voy").hidden=false;document.body.style.overflow="hidden";renderVoy();
@@ -1314,7 +1328,7 @@ let loaded=false;setTimeout(()=>{if(!loaded&&!msg.hidden)msg.textContent="La car
 const BASE=new URL("map/",location.href).href;
 const LOW=(navigator.deviceMemory||8)<=4||matchMedia("(max-width:700px)").matches;
 const MODES={avion:["Avion","#f2b705","✈️"],shinkansen:["Shinkansen","#e5194b","🚄"],train:["Train","#2f6fe4","🚆"],metro:["Métro","#8b5cf6","🚇"],bus:["Bus","#16a36a","🚌"],voiture:["Voiture","#64748b","🚗"],velo:["Vélo","#84cc16","🚲"],bateau:["Bateau","#0ea5c6","⛴️"],cable:["Téléphérique","#f97316","🚡"],pied:["À pied","#94a3b8","🚶"]};
-const DAYS=["ven. 2 avril","sam. 3 avril","dim. 4 avril","lun. 5 avril","mar. 6 avril","mer. 7 avril","jeu. 8 avril","ven. 9 avril","sam. 10 avril","dim. 11 avril","lun. 12 avril","mar. 13 avril","mer. 14 avril","jeu. 15 avril","ven. 16 avril","sam. 17 avril","dim. 18 avril"];
+const DAYS=["ven. 2 avril","sam. 3 avril","dim. 4 avril","lun. 5 avril","mar. 6 avril","mer. 7 avril","jeu. 8 avril","ven. 9 avril","sam. 10 avril","dim. 11 avril","lun. 12 avril","mar. 13 avril","mer. 14 avril","jeu. 15 avril","ven. 16 avril","sam. 17 avril","dim. 18 avril","lun. 19 avril"];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 // ---------- tuiles embarquées ----------
 let MAN=null;const packs=new Map();const sizes=new Map();let order=[];const CAP=LOW?80e6:170e6;
@@ -1480,7 +1494,7 @@ function frameAt(t,jump){
  }
  const st=dwell?l.b:null;
  info(l,st,p);
- const day=(dwell?l.b:l.a).d;if(day!==lastShown){lastShown=day;if(window.__showDay)window.__showDay(day)}
+ const day=(dwell?l.b:l.a).d;if(day!==lastShown){lastShown=day;if(window.__showDay)window.__showDay(day+1)}
  const tm=timeOf(l.b)||[12,0];if(map.getSource("night"))map.getSource("night").setData(nightPoly(l.b.d,tm[0],tm[1]));
  $("m3range").value=Math.round(t/TOTAL*1000);updTime();
  curStop=l.b.k;highlightList(curStop);
@@ -1518,14 +1532,14 @@ function select(k,fly){
  play(false);curStop=k;const s=STOPS[k];const i=TL.findIndex(x=>x.l.i===k);
  if(i>=0)T=TL[i].t1+0.01;else T=0;
  lastInfo="";const l=i>=0?TL[i].l:LEGS[0];info(l,s,[s.lon,s.lat]);highlightList(k);
- if(lastShown!==s.d){lastShown=s.d;if(window.__showDay)window.__showDay(s.d)}
+ if(lastShown!==s.d){lastShown=s.d;if(window.__showDay)window.__showDay(s.d+1)}
  $("m3range").value=Math.round(T/TOTAL*1000);updTime();
  if(i>=0){map.getSource("veh").setData({type:"FeatureCollection",features:[{type:"Feature",properties:{m:l.m},geometry:{type:"Point",coordinates:[s.lon,s.lat]}}]});map.getSource("trail").setData({type:"FeatureCollection",features:[]})}
  if(fly)map.flyTo({center:[s.lon,s.lat],zoom:zoomFor(s),pitch:s.lon<20?0:58,bearing:map.getBearing(),duration:2400,essential:true});
  else map.jumpTo({center:[s.lon,s.lat],zoom:3.2,pitch:0});
  cam=null;
 }
-window.__jp3dDay=d=>{if(playing||!STOPS.length)return;if(STOPS[curStop]&&STOPS[curStop].d===d)return;const k=STOPS.findIndex(s=>s.d===d&&s.v&&s.m);if(k>=0)select(k,true)};
+window.__jp3dDay=pd=>{const d=pd-1;if(playing||!STOPS.length||d<0)return;if(STOPS[curStop]&&STOPS[curStop].d===d)return;const k=STOPS.findIndex(s=>s.d===d&&s.v&&s.m);if(k>=0)select(k,true)};
 new IntersectionObserver(es=>{if(!es[0].isIntersecting&&playing)play(false)}).observe($("m3wrap"));
 })();
 </script>
