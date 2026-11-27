@@ -220,6 +220,7 @@ section[id]{scroll-margin-top:64px}
 .bk .pr.h{background:var(--tor);color:#fff}.bk .pr.m{background:#c98a00;color:#fff}.bk .pr.b{background:var(--line);color:var(--ink)}
 .bk .tcat{font-size:12px;color:var(--mute);margin-left:6px}
 .bk .over{color:var(--tor);font-weight:700}
+.bk .tact{display:inline-flex;gap:2px;vertical-align:middle}
 .bk .x{background:none;border:0;color:var(--mute);cursor:pointer;font-size:16px;min-width:32px;min-height:32px}
 .modal{position:fixed;inset:0;background:rgba(5,8,22,.55);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal[hidden]{display:none}
@@ -843,6 +844,7 @@ function show(i,scroll){
 $("prev").onclick=()=>show(cur-1);$("next").onclick=()=>show(cur+1);
 window.__showDay=i=>{if(i!==cur)show(i,false)};window.__fmtD=fmtD;
 window.__trip={D,BK,CHK,KC,fmtD,cur:()=>cur,setRate:(v,silent)=>{rate=v;if(!silent)show(cur)}};
+window.__view=/^#(j\d+)?$/.test(location.hash)?"programme":location.hash.slice(1);
 const h=(location.hash.match(/^#j(\d+)$/)||[])[1];show(h?+h-1:2);
 }
 </script>
@@ -1129,7 +1131,7 @@ function renderTasks(){
  const f=$("tF").value,today=new Date(todayISO()+"T00:00:00");
  const V=L.filter(t=>(f==="all"||(f==="done")===!!t.done)&&(!cv||t.cat===cv)).sort((a,b)=>(!!a.done-!!b.done)||(a.deadline||"9").localeCompare(b.deadline||"9")||("hmb".indexOf(a.prio)-"hmb".indexOf(b.prio)));
  $("tList").innerHTML=V.map(t=>{const dd=t.deadline?Math.round((new Date(t.deadline+"T00:00:00")-today)/864e5):null;const when=dd==null?"":dd<0?"date dépassée":dd===0?"aujourd'hui":"dans "+dd+" j";
-  return `<li class="${t.done?"done":""}"><input type="checkbox" id="t_${esc(t.id)}" data-t="${esc(t.id)}" ${t.done?"checked":""}><label class="when" for="t_${esc(t.id)}">${esc(t.when||(t.deadline?fmtShort(t.deadline):""))}<small class="${dd!=null&&dd<0&&!t.done?"over":dd!=null&&dd<=14?"soon":""}">${t.done?"fait"+(t.doneAt?" le "+fmtShort(t.doneAt.slice(0,10)):""):when}</small></label><span class="what"><b>${esc(t.title)}</b><span class="pr ${t.prio}">${{h:"haute",m:"moyenne",b:"basse"}[t.prio]||""}</span><span class="tcat">${esc(t.cat)}</span><br><span class="note">${esc(t.detail||"")}</span> <button class="x" type="button" data-te="${esc(t.id)}" aria-label="Modifier la tâche" title="Modifier">✎</button><button class="x" type="button" data-tx="${esc(t.id)}" aria-label="${t.seed?"Masquer":"Supprimer"} la tâche" title="${t.seed?"Masquer":"Supprimer"}">✕</button></span></li>`}).join("")||`<li><span class="note">Rien à afficher.</span></li>`;
+  return `<li class="${t.done?"done":""}"><input type="checkbox" id="t_${esc(t.id)}" data-t="${esc(t.id)}" ${t.done?"checked":""}><label class="when" for="t_${esc(t.id)}">${esc(t.when||(t.deadline?fmtShort(t.deadline):""))}<small class="${dd!=null&&dd<0&&!t.done?"over":dd!=null&&dd<=14?"soon":""}">${t.done?"fait"+(t.doneAt?" le "+fmtShort(t.doneAt.slice(0,10)):""):when}</small></label><span class="what"><b>${esc(t.title)}</b><span class="pr ${t.prio}">${{h:"haute",m:"moyenne",b:"basse"}[t.prio]||""}</span><span class="tcat">${esc(t.cat)}</span><br><span class="note">${esc(t.detail||"")}</span> <span class="tact"><button class="x" type="button" data-te="${esc(t.id)}" aria-label="Modifier la tâche" title="Modifier">✎</button><button class="x" type="button" data-tx="${esc(t.id)}" aria-label="${t.seed?"Masquer":"Supprimer"} la tâche" title="${t.seed?"Masquer":"Supprimer"}">✕</button></span></span></li>`}).join("")||`<li><span class="note">Rien à afficher.</span></li>`;
  $("tList").querySelectorAll("[data-t]").forEach(x=>x.onchange=()=>{const id=x.dataset.t;const base=S.tasks[id]||{};put("tasks",id,{...base,done:x.checked,doneAt:x.checked?new Date().toISOString():null})});
  $("tList").querySelectorAll("[data-te]").forEach(b=>b.onclick=()=>taskForm(b.dataset.te));
  $("tList").querySelectorAll("[data-tx]").forEach(b=>b.onclick=()=>{const id=b.dataset.tx;const t=L.find(x=>x.id===id);confirmBox(t.seed?"Masquer cette tâche de la liste ?":"Supprimer cette tâche ?",()=>{if(t.seed)put("tasks",id,{...(S.tasks[id]||{}),hidden:true});else del("tasks",id)})});
@@ -1248,6 +1250,7 @@ $("gSavDate").value=todayISO();
 $("gSavAdd").onclick=()=>{const a=+$("gSavAmt").value;if(!(a>0)){$("gSavAmt").focus();status("Indiquez un montant d'épargne positif.",true);return}put("savings",uid(),{type:$("gSavType").value,amount:a,date:$("gSavDate").value||todayISO(),note:$("gSavNote").value.trim()});$("gSavAmt").value="";$("gSavNote").value=""};
 // export / import
 async function download(name,text,type){
+ if(!window.claude){try{const u=URL.createObjectURL(new Blob([text],{type}));const l=document.createElement("a");l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);$("gIoMsg").textContent="Fichier téléchargé : "+name;return}catch(e){}}
  try{const dl=window.claude&&await window.claude.use("downloads");if(dl){await dl.save({filename:name,data:text});$("gIoMsg").textContent="Fichier proposé au téléchargement : "+name;return}}catch(e){if(e&&e.code&&e.code!=="unavailable"){$("gIoMsg").textContent="Téléchargement refusé ou annulé.";return}}
  $("gIoMsg").textContent="Le téléchargement n'est pas disponible ici. Copiez le contenu ci-dessous.";modal("Sauvegarde",`<textarea rows="12" style="width:100%" readonly>${esc(text)}</textarea>`,[{t:"Fermer"}]);
 }

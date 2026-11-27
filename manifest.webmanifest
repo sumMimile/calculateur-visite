@@ -1,0 +1,16 @@
+{
+ "name": "Japon 2027",
+ "short_name": "Japon 2027",
+ "description": "Voyage au Japon du 1er au 19 avril 2027 : programme, carte 3D, budget, réservations et préparatifs.",
+ "lang": "fr",
+ "start_url": "./index.html#programme",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#ffffff",
+ "theme_color": "#d9381e",
+ "icons": [
+  {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+  {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+ ]
+}
